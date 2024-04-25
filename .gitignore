@@ -1,0 +1,7 @@
+# cmake build directory
+build
+
+# vim work files
+*~
+*.swp
+
