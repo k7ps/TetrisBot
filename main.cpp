@@ -4,6 +4,9 @@
 #include <vector>
 #include <string>
 
+#include <osmanip/utility/options.hpp>
+#include <osmanip/utility/iostream.hpp>
+
 const int symbol_size = 2;
 const std::string empty = "..";
 const std::string fill = "██";
@@ -11,31 +14,29 @@ const std::string indent_left = "\t";
 const std::string indent_up = "\n\n";
 
 void clear_screen() {
-    std::cout << "\x1B[2J\x1B[H";
-    std::cout << std::flush;
+    osm::cout << "\x1B[2J\x1B[H";
+    osm::cout << std::flush;
 }
 
-void draw_field(const std::vector<std::vector<bool>>& field) {
-    std::cout << indent_up;
-    std::cout << indent_left << ' ';
-    for (int i=0; i<field[0].size() * symbol_size; i++) std::cout << '_';
-    std::cout << '\n';
+void draw_field(const std::vector<std::vector<int8_t>>& field) {
+    osm::cout << indent_up << indent_left << ' ';
+    for (int i=0; i<field[0].size() * symbol_size; i++) osm::cout << '_';
+    osm::cout << '\n';
 
     for (const auto& line : field) {
-        std::cout << indent_left << '|';
+        osm::cout << indent_left << '|';
         for (auto symbol : line)
-            std::cout << (symbol ? fill : empty);
-        std::cout << '|' << '\n';
+            osm::cout << (symbol ? fill : empty);
+        osm::cout << '|' << '\n';
     }
 
-    std::cout << indent_left << ' ';
-    for (int i=0; i<field[0].size() * symbol_size; i++) std::cout << "¯";
-    std::cout << '\n';
-    std::cout << std::flush;
+    osm::cout << indent_left << ' ';
+    for (int i=0; i<field[0].size() * symbol_size; i++) osm::cout << "¯";
+    osm::cout << '\n' << std::flush;
 }
 
 int main(int argc, char* argv[]) {
-    std::vector<std::vector<std::vector<bool>>> fields(4);
+    std::vector<std::vector<std::vector<int8_t>>> fields(4);
     fields[0] = {
         {0,0,0,0},
         {0,0,0,0},
@@ -61,10 +62,12 @@ int main(int argc, char* argv[]) {
         {1,1,1,1}
     };
 
+    osm::OPTION(osm::CURSOR::OFF);
     for (const auto& field : fields) {
         clear_screen();
         draw_field(field);
         sleep(2);
     }
+    osm::OPTION(osm::CURSOR::ON);
 }
 

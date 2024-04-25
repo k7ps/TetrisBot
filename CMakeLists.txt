@@ -1,7 +1,13 @@
-cmake_minimum_required(VERSION 3.10)
-project(TetrisBot)
+cmake_minimum_required(VERSION 3.15)
+
+set(ProjectName "TetrisBot")
+project(${ProjectName})
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(TetrisBot main.cpp)
+find_package(osmanip)
+
+add_executable(${ProjectName} main.cpp)
+
+target_link_libraries(${ProjectName} osmanip::osmanip)
 
