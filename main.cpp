@@ -6,36 +6,28 @@
 
 #include <osmanip/utility/options.hpp>
 #include <osmanip/utility/iostream.hpp>
+#include <osmanip/manipulators/colsty.hpp>
+#include <osmanip/graphics/canvas.hpp>
 
-const int symbol_size = 2;
-const std::string empty = "..";
-const std::string fill = "██";
-const std::string indent_left = "\t";
-const std::string indent_up = "\n\n";
+struct Point {
+    Point(int _x, int _y) 
+        : x{_x}, y{_y} {}
 
-void clear_screen() {
-    osm::cout << "\x1B[2J\x1B[H";
-    osm::cout << std::flush;
-}
+    int x = 0;
+    int y = 0;
+};
 
-void draw_field(const std::vector<std::vector<int8_t>>& field) {
-    osm::cout << indent_up << indent_left << ' ';
-    for (int i=0; i<field[0].size() * symbol_size; i++) osm::cout << '_';
-    osm::cout << '\n';
-
-    for (const auto& line : field) {
-        osm::cout << indent_left << '|';
-        for (auto symbol : line)
-            osm::cout << (symbol ? fill : empty);
-        osm::cout << '|' << '\n';
-    }
-
-    osm::cout << indent_left << ' ';
-    for (int i=0; i<field[0].size() * symbol_size; i++) osm::cout << "¯";
-    osm::cout << '\n' << std::flush;
-}
+const std::vector<std::string> colors = {
+    "black",
+    "bg red",
+    "bg green",
+    "bg lt purple"
+};
 
 int main(int argc, char* argv[]) {
+    const Point field_size(4,4);
+    const Point symbol_size(2,1);
+
     std::vector<std::vector<std::vector<int8_t>>> fields(4);
     fields[0] = {
         {0,0,0,0},
@@ -51,23 +43,41 @@ int main(int argc, char* argv[]) {
     };
     fields[2] = {
         {0,0,0,0},
-        {1,1,1,0},
-        {1,1,0,0},
+        {2,2,2,0},
+        {2,1,0,0},
         {1,1,1,0}
     };
     fields[3] = {
-        {0,0,0,1},
-        {1,1,1,1},
-        {1,1,0,1},
-        {1,1,1,1}
+        {0,0,0,3},
+        {2,2,2,3},
+        {2,1,0,3},
+        {1,1,1,3}
     };
+    
+    osm::Canvas canvas(field_size.x*symbol_size.x+2, field_size.y*symbol_size.y+2);
+    canvas.enableFrame(true);
+    canvas.setFrame(osm::FrameStyle::BOX);
 
-    osm::OPTION(osm::CURSOR::OFF);
-    for (const auto& field : fields) {
-        clear_screen();
-        draw_field(field);
-        sleep(2);
+    std::cout << std::endl;
+
+    //osm::OPTION(osm::CURSOR::OFF);
+
+    for (auto field : fields) {
+        canvas.clear();
+        for (int x=0; x<field_size.x; x++) {
+            for (int y=0; y<field_size.y; y++) {
+                for (int kx=0; kx<symbol_size.x; kx++) {
+                    for (int ky=0; ky<symbol_size.y; ky++) {
+                        canvas.put(x*symbol_size.x+kx+1, y*symbol_size.y+ky+1, ' ', osm::feat(osm::col, colors[field[y][x]]));
+                    }
+                }
+            }
+        }    
+        canvas.refresh();
+        osm::cout << std::flush;
+        sleep(1);
     }
-    osm::OPTION(osm::CURSOR::ON);
+
+    //osm::OPTION(osm::CURSOR::ON);
 }
 
