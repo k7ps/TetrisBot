@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(osmanip)
 
-add_executable(${ProjectName} main.cpp)
+add_executable(${ProjectName} main.cpp piece.cpp)
 
 target_link_libraries(${ProjectName} osmanip::osmanip)
 
