@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 
+
 using Piece = std::vector<std::vector<int8_t>>;
 
 enum PieceType {
