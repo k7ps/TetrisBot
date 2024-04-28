@@ -35,9 +35,10 @@ int main(int argc, char* argv[]) {
     std::vector<PieceType> a = {PieceType::I, PieceType::Z, PieceType::O, PieceType::Z, PieceType::T, PieceType::S, PieceType::L};
     std::vector<Point> b = {Point(0,0), Point(3,0), Point(0,1), Point(5,0), Point(7,0), Point(0,3), Point(2,1)};
 
-    //osm::OPTION(osm::CURSOR::OFF);
+    osm::OPTION(osm::CURSOR::OFF);
 
     for (int i=0; i<=a.size(); i++) {
+        system("clear");
         canvas.clear();
         for (int y = 0; y < field_size.y; y++) {
             for (int x = 0; x < field_size.x; x++) {
@@ -63,6 +64,6 @@ int main(int argc, char* argv[]) {
             field.Put(b[i], CreatePiece(a[i]));
     }
 
-    //osm::OPTION(osm::CURSOR::ON);
+    osm::OPTION(osm::CURSOR::ON);
 }
 
