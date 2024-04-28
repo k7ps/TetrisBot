@@ -20,5 +20,5 @@ const std::vector<Piece>& GetAllRotations(PieceType type);
 
 Piece CreatePiece(PieceType type);
 
-
 #endif // PIECE_H
+
