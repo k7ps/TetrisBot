@@ -1,4 +1,5 @@
 #include "drawer.h"
+#include "settings.h"
 
 #include <osmanip/manipulators/colsty.hpp>
 #include <osmanip/manipulators/cursor.hpp>
@@ -37,17 +38,6 @@ TerminalDrawer::TerminalDrawer(const Point& fieldSize, const Point& pixelSize)
 }
 
 void TerminalDrawer::DrawFrame(const Field& field, int time) {
-    static const std::vector<std::string> colors = {
-        "black",
-        "bg red",
-        "bg white",
-        "bg purple",
-        "bg green",
-        "bg blue",
-        "bg orange",
-        "bg cyan"
-    };
-    
     ClearScreen();
     for (int y = 0; y < FieldSize.y; y++) {
         for (int x = 0; x < FieldSize.x; x++) {
@@ -57,7 +47,7 @@ void TerminalDrawer::DrawFrame(const Field& field, int time) {
                         x * PixelSize.x + px + 1, 
                         y * PixelSize.y + py + 1, 
                         ' ',
-                        osm::feat(osm::col, colors[field[FieldSize.y - y - 1][x]])
+                        osm::feat(osm::col, Settings::PieceColors[field[FieldSize.y - y - 1][x]])
                     );
                 }
             }

@@ -27,7 +27,6 @@ public:
 private:
     Point Size;
     std::vector<std::vector<int8_t>> Data;
-
 };
 
 #endif // FIELD_H
