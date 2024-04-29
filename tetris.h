@@ -23,4 +23,4 @@ private:
     std::queue<PieceType> NextPieces;
 };
 
-#endif 
+#endif // TETRIS_H 
