@@ -9,9 +9,10 @@
 #include <string>
 #include <unistd.h>
 
+
 namespace {
 
-    std::string TimeMsToString(int ms) {
+    std::string TimeMsToString(int64_t ms) {
         const int minDigitsCount = 4;
 
         std::string res(std::to_string(ms));
@@ -29,15 +30,15 @@ TerminalDrawer::TerminalDrawer(const Point& fieldSize, const Point& pixelSize)
     : FieldSize(fieldSize)
     , PixelSize(pixelSize)
     , Canvas(FieldSize.x * PixelSize.x + 2, FieldSize.y * PixelSize.y + 2)
-    , LastTimeMs(NOT_GIVEN)
+    , LastCalculationTime(NOT_GIVEN)
 {
     Canvas.enableFrame(true);
     Canvas.setFrame(osm::FrameStyle::BOX);
 
-    //osm::OPTION(osm::CURSOR::OFF);
+    osm::OPTION(osm::CURSOR::OFF);
 }
 
-void TerminalDrawer::DrawFrame(const Field& field, int time) {
+void TerminalDrawer::DrawFrame(const Field& field, int64_t time) {
     ClearScreen();
     for (int y = 0; y < FieldSize.y; y++) {
         for (int x = 0; x < FieldSize.x; x++) {
@@ -56,22 +57,22 @@ void TerminalDrawer::DrawFrame(const Field& field, int time) {
     Canvas.refresh();
 
     DrawTime(time);
-    osm::cout << std::flush;
+    osm::cout << '\n' << std::flush;
 }
 
 void TerminalDrawer::DrawTime(int ms) {
-    static int sumTimes = 0;
-    static int calculationsCount = 0;
+    static int64_t sumTimes = 0;
+    static int64_t calculationsCount = 0;
     if (ms != NOT_GIVEN) {
-        LastTimeMs = ms;
+        LastCalculationTime = ms;
         ++calculationsCount;
         sumTimes += ms;
     }
-    if (LastTimeMs == NOT_GIVEN) {
+    if (LastCalculationTime == NOT_GIVEN) {
         return;
     }
 
-    osm::cout << "      " << TimeMsToString(LastTimeMs) << "\n"
+    osm::cout << "      " << TimeMsToString(LastCalculationTime) << "\n"
               << "mean: " << TimeMsToString(sumTimes / calculationsCount) << "\n";
 }
 
