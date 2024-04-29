@@ -1,5 +1,6 @@
 #include "field.h"
 #include "drawer.h"
+#include "settings.h"
 
 #include <unistd.h>
 #include <vector>
@@ -11,11 +12,8 @@
 int main(int argc, char* argv[]) {
     srandom(time(0));
 
-    const Point fieldSize(10, 20);
-    const Point pixelSize(2, 1);
-
-    Field field(fieldSize);
-    TerminalDrawer drawer(fieldSize, pixelSize); 
+    Field field(Settings::FieldSize);
+    TerminalDrawer drawer(Settings::FieldSize, Settings::PixelSize); 
 
     std::vector<PieceType> a = {PieceType::I, PieceType::Z, PieceType::O, PieceType::Z, PieceType::T, PieceType::S, PieceType::L};
     std::vector<Point> b = {Point(0,0), Point(3,0), Point(0,1), Point(5,0), Point(7,0), Point(0,3), Point(2,1)};
