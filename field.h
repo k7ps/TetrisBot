@@ -30,8 +30,7 @@ private:
     std::vector<std::vector<int8_t>> Data;
 
     bool HaveAtStart;
-    Piece PieceAtStart;
-    Point PieceAtStartPos;
+    PiecePosition PieceAtStart;
 };
 
 #endif // FIELD_H

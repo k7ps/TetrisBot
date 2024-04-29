@@ -12,19 +12,20 @@
 
 namespace {
 
-    std::string TimeMsToString(int64_t ms) {
+    std::string MillisecondsToString(int64_t ms) {
         const int minDigitsCount = 4;
 
         std::string res(std::to_string(ms));
         if (res.size() < minDigitsCount) {
             res = std::string(minDigitsCount - res.size(), '0') + res;
         }
-        res.insert(res.size() - 3, 1, '.');
+        res.insert(res.size() - 3, ".");
         
         return res + "s";
     }
 
 }
+
 
 TerminalDrawer::TerminalDrawer(const Point& fieldSize, const Point& pixelSize)
     : FieldSize(fieldSize)
@@ -72,8 +73,8 @@ void TerminalDrawer::DrawTime(int ms) {
         return;
     }
 
-    osm::cout << "      " << TimeMsToString(LastCalculationTime) << "\n"
-              << "mean: " << TimeMsToString(sumTimes / calculationsCount) << "\n";
+    osm::cout << "      " << MillisecondsToString(LastCalculationTime) << "\n"
+              << "mean: " << MillisecondsToString(sumTimes / calculationsCount) << "\n";
 }
 
 void TerminalDrawer::ClearScreen() {

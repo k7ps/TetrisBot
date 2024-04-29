@@ -5,18 +5,18 @@
 #include <exception>
 
 
-struct ProgrammStoppedException {};
+struct ProgramStoppedException {};
 
 int main() {
     std::signal(SIGTSTP, [](int) {
-        throw ProgrammStoppedException();
+        throw ProgramStoppedException();
     });
 
     try {
         Tetris tetris;
         tetris.Play();
-    } catch (ProgrammStoppedException err) {
-        std::cout << "\rProgramm was stopped\n";
+    } catch (ProgramStoppedException err) {
+        std::cout << "\rProgram was stopped\n";
     } 
 
     return 0;

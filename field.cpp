@@ -51,10 +51,10 @@ bool Field::PutAtStart(const Piece& piece) {
         }
     }
 
-    PieceAtStart = piece;
-    PieceAtStartPos = Point((Size.x - right - 1) / 2, Size.y - up - 1);
+    PieceAtStart.piece = piece;
+    PieceAtStart.pos = Point((Size.x - right - 1) / 2, Size.y - up - 1);
 
-    HaveAtStart = Put(PieceAtStartPos, PieceAtStart);
+    HaveAtStart = Put(PieceAtStart.pos, PieceAtStart.piece);
     return HaveAtStart;
 }
 
@@ -92,7 +92,7 @@ bool Field::EraseFromStart() {
         return false;
     }
 
-    return Erase(PieceAtStartPos, PieceAtStart);
+    return Erase(PieceAtStart.pos, PieceAtStart.piece);
 }
 
 bool Field::ClearFilledLines() {
