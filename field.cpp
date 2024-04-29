@@ -1,5 +1,6 @@
 #include "field.h"
 
+
 Field::Field(const Point& size)
     : Size(size),  Data(Size.y, std::vector<int8_t>(Size.x)) {}
 
