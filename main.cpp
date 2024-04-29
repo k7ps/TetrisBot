@@ -15,17 +15,20 @@ int main(int argc, char* argv[]) {
     Field field(Settings::FieldSize);
     TerminalDrawer drawer(Settings::FieldSize, Settings::PixelSize); 
 
-    std::vector<PieceType> a = {PieceType::I, PieceType::Z, PieceType::O, PieceType::Z, PieceType::T, PieceType::S, PieceType::L};
-    std::vector<Point> b = {Point(0,0), Point(3,0), Point(0,1), Point(5,0), Point(7,0), Point(0,3), Point(2,1)};
+    std::vector<PieceType> a = {
+        PieceType::I, PieceType::Z, PieceType::O, PieceType::Z, PieceType::T, PieceType::S, PieceType::L};
+    std::vector<Point> b = {
+        Point(0,0), Point(3,0), Point(0,1), Point(5,0), Point(7,0), Point(0,3), Point(2,1)};
 
-    for (int i=0; i<=a.size(); i++) {
-        drawer.DrawFrame(field, 500 + rand() % 2000);
+    for (int i=0; i<a.size(); i++) {
+        auto piece = CreatePiece(a[i]);
+
+        drawer.DrawFrame(field);
         sleep(1);
 
-        if (field.ClearFilledLines())
-            i--;
-        if (i < a.size())
-            field.Put(b[i], CreatePiece(a[i]));
+        field.PutAtStart(piece);
+        drawer.DrawFrame(field);
+        sleep(1);
     }
 
     return 0;

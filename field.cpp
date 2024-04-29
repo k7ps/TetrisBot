@@ -1,5 +1,7 @@
 #include "field.h"
 
+#include <algorithm>
+
 
 Field::Field(const Point& size)
     : Size(size),  Data(Size.y, std::vector<int8_t>(Size.x)) {}
@@ -31,6 +33,25 @@ bool Field::Put(const Point& pos, const Piece& piece) {
         }
     }
     return true;
+}
+
+bool Field::PutAtStart(const Piece& piece) {
+    int8_t right = 0;
+    int8_t up = 0;
+     
+    for (int8_t y = 0; y < piece.size(); y++) {
+        for (int8_t x = 0; x < piece[0].size(); x++) {
+            if (piece[y][x]) {
+                right = std::max(right, x);
+                up = std::max(up, y);
+            }
+        }
+    }
+
+    return Put(
+        Point((Size.x - right) / 2, Size.y - up - 1), 
+        piece
+    );
 }
 
 bool Field::ClearFilledLines() {

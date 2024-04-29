@@ -22,6 +22,8 @@ public:
     bool CanPut(const Point& pos, const Piece& piece);
     bool Put(const Point& pos, const Piece& piece);
 
+    bool PutAtStart(const Piece& piece);
+
     bool ClearFilledLines();
 
 private:
