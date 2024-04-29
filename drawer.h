@@ -6,13 +6,13 @@
 #include <osmanip/graphics/canvas.hpp>
 
 
-const int NOT_GIVEN = -1;
+const int64_t NOT_GIVEN = -1;
 
 class TerminalDrawer {
 public:
     TerminalDrawer(const Point& fieldSize, const Point& pixelSize);
 
-    void DrawFrame(const Field& field, int time = NOT_GIVEN);
+    void DrawFrame(const Field& field, int64_t time = NOT_GIVEN);
 
     ~TerminalDrawer();
 
@@ -26,7 +26,7 @@ private:
 
     osm::Canvas Canvas;     
 
-    int LastTimeMs;
+    int64_t LastCalculationTime; // ms
 };
 
 #endif // DRAWER_H
