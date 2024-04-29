@@ -7,6 +7,8 @@
 #include <string>
 #include <ctime>
 #include <stdlib.h>
+#include <chrono>
+#include <thread>
 
 
 int main(int argc, char* argv[]) {
@@ -20,15 +22,26 @@ int main(int argc, char* argv[]) {
     std::vector<Point> b = {
         Point(0,0), Point(3,0), Point(0,1), Point(5,0), Point(7,0), Point(0,3), Point(2,1)};
 
+    auto drawFrame = [&drawer, &field](int time = NOT_GIVEN) {
+        drawer.DrawFrame(field, time);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    };
+
+    drawFrame();
+
     for (int i=0; i<a.size(); i++) {
         auto piece = CreatePiece(a[i]);
 
-        drawer.DrawFrame(field);
-        sleep(1);
-
         field.PutAtStart(piece);
-        drawer.DrawFrame(field);
-        sleep(1);
+        drawFrame();
+
+        field.EraseFromStart();
+        field.Put(b[i], piece);
+        drawFrame(500 + rand() % 1500);
+
+        if (field.ClearFilledLines()) {
+            drawFrame();
+        }
     }
 
     return 0;
