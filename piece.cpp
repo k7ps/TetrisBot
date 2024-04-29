@@ -2,6 +2,7 @@
 
 #include <exception>
 
+
 const std::vector<Piece>& GetAllRotations(PieceType type) {
     static const std::vector<std::vector<Piece>> PiecesRotations = {
         // I
