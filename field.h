@@ -15,11 +15,16 @@ public:
         return Data[index].data(); 
     }        
 
-    bool CanPut(const Point& pos, const Piece& piece);
-    bool Put(const Point& pos, const Piece& piece);
-    bool PutAtStart(const Piece& piece);
+    Point GetSize() const {
+        return Size;
+    }
 
-    bool CanErase(const Point& pos, const Piece& piece);
+    // return TRUE if action done, FALSE if not
+    bool CanPut(const Point& pos, const Piece& piece) const;
+    bool Put(const Point& pos, const Piece& piece);
+    bool PutAtStart(PieceType type);
+
+    bool CanErase(const Point& pos, const Piece& piece) const;
     bool Erase(const Point& pos, const Piece& piece);
     bool EraseFromStart();
 

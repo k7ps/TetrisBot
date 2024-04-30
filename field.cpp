@@ -9,9 +9,9 @@ Field::Field(const Point& size)
     , HaveAtStart(false)
 {}
 
-bool Field::CanPut(const Point& pos, const Piece& piece) {
+bool Field::CanPut(const Point& pos, const Piece& piece) const { 
     for (int y = 0; y < piece.size(); y++) {
-        for (int x = 0; x < piece[0].size(); x++) {
+        for (int x = 0; x < piece[y].size(); x++) {
             if (piece[y][x] != 0) {
                 Point p(x + pos.x, y + pos.y);
                 if (p.x >= Size.x || p.y >= Size.y || Data[p.y][p.x] != 0) {
@@ -29,7 +29,7 @@ bool Field::Put(const Point& pos, const Piece& piece) {
     }
 
     for (int y = 0; y < piece.size(); y++) {
-        for (int x = 0; x < piece[0].size(); x++) {
+        for (int x = 0; x < piece[y].size(); x++) {
             if (piece[y][x]) {
                 Data[pos.y + y][pos.x + x] = piece[y][x];
             }
@@ -38,29 +38,30 @@ bool Field::Put(const Point& pos, const Piece& piece) {
     return true;
 }
 
-bool Field::PutAtStart(const Piece& piece) {
+bool Field::PutAtStart(PieceType type) {
     int8_t right = 0;
     int8_t up = 0;
      
-    for (int8_t y = 0; y < piece.size(); y++) {
-        for (int8_t x = 0; x < piece[0].size(); x++) {
-            if (piece[y][x]) {
+    PieceAtStart.piece = GetDefaultPieceByType(type);
+
+    for (int8_t y = 0; y < PieceAtStart.piece.size(); y++) {
+        for (int8_t x = 0; x < PieceAtStart.piece[y].size(); x++) {
+            if (PieceAtStart.piece[y][x]) {
                 right = std::max(right, x);
                 up = std::max(up, y);
             }
         }
     }
 
-    PieceAtStart.piece = piece;
     PieceAtStart.pos = Point((Size.x - right - 1) / 2, Size.y - up - 1);
 
     HaveAtStart = Put(PieceAtStart.pos, PieceAtStart.piece);
     return HaveAtStart;
 }
 
-bool Field::CanErase(const Point& pos, const Piece& piece) {
+bool Field::CanErase(const Point& pos, const Piece& piece) const {
     for (int y = 0; y < piece.size(); y++) {
-        for (int x = 0; x < piece[0].size(); x++) {
+        for (int x = 0; x < piece[y].size(); x++) {
             if (piece[y][x] != 0) {
                 Point p(x + pos.x, y + pos.y);
                 if (p.x >= Size.x || p.y >= Size.y || Data[p.y][p.x] == 0) {
@@ -78,7 +79,7 @@ bool Field::Erase(const Point& pos, const Piece& piece) {
     }
 
     for (int y = 0; y < piece.size(); y++) {
-        for (int x = 0; x < piece[0].size(); x++) {
+        for (int x = 0; x < piece[y].size(); x++) {
             if (piece[y][x]) {
                 Data[pos.y + y][pos.x + x] = 0;
             }
