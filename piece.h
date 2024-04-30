@@ -20,7 +20,7 @@ enum PieceType {
 };
 
 const std::vector<Piece>& GetAllRotations(PieceType type);
-Piece CreatePiece(PieceType type);
+const Piece& GetDefaultPieceByType(PieceType type);
 
 struct PiecePosition {
     PiecePosition()

@@ -111,7 +111,7 @@ const std::vector<Piece>& GetAllRotations(PieceType type) {
     return PiecesRotations[i];
 }
 
-Piece CreatePiece(PieceType type){
+const Piece& GetDefaultPieceByType(PieceType type){
     return GetAllRotations(type)[0];
 }
 

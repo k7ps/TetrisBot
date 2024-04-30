@@ -36,8 +36,10 @@ Tetris::Tetris()
 }
 
 void Tetris::Play() {
-    /*while (true) {
-        PieceType curPiece = NextPieces.front();
+    /*DrawFrame();
+
+    while (true) {
+        auto curPiece = NextPieces.front();
         NextPiece.pop();
         NextPiece.push(GetRandomPiece());
 
@@ -65,18 +67,16 @@ void Tetris::Play() {
     DrawFrame();
 
     for (int i=0; i<a.size(); i++) {
-        auto piece = CreatePiece(a[i]);
-
-        TetrisField.PutAtStart(piece);
+        TetrisField.PutAtStart(a[i]);
         DrawFrame();
 
         TetrisField.EraseFromStart();
-        TetrisField.Put(b[i], piece);
+        TetrisField.Put(b[i], GetDefaultPieceByType(a[i]));
         DrawFrame(500 + rand() % 1500);
 
         if (TetrisField.ClearFilledLines()) {
             DrawFrame();
-        }
+        }               
     }
 }
 
