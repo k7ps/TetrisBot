@@ -19,6 +19,10 @@ public:
         return Size;
     }
 
+    int GetLineCount() const {
+        return LineCount;
+    }
+
     // return TRUE if action done, FALSE if not
     bool CanPut(const Point& pos, const Piece& piece) const;
     bool Put(const Point& pos, const Piece& piece);
@@ -36,6 +40,8 @@ private:
 
     bool HaveAtStart;
     PiecePosition PieceAtStart;
+
+    int LineCount;
 };
 
 #endif // FIELD_H

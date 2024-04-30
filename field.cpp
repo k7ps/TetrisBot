@@ -7,6 +7,7 @@ Field::Field(const Point& size)
     : Size(size)
     , Data(Size.y, std::vector<int8_t>(Size.x)) 
     , HaveAtStart(false)
+    , LineCount(0)
 {}
 
 bool Field::CanPut(const Point& pos, const Piece& piece) const { 
@@ -108,6 +109,7 @@ bool Field::ClearFilledLines() {
         
         if (isFilled) {
             filledLines.push_back(y);
+            ++LineCount;
         }
     }
 

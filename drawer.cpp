@@ -32,6 +32,9 @@ TerminalDrawer::TerminalDrawer(const Point& fieldSize, const Point& pixelSize)
     , PixelSize(pixelSize)
     , Canvas(FieldSize.x * PixelSize.x + 2, FieldSize.y * PixelSize.y + 2)
     , LastCalculationTime(NOT_GIVEN)
+    , SumOfCalculationTimes(0)
+    , CalculationCount(0)
+    , LineCount(0)
 {
     Canvas.enableFrame(true);
     Canvas.setFrame(osm::FrameStyle::BOX);
@@ -39,7 +42,7 @@ TerminalDrawer::TerminalDrawer(const Point& fieldSize, const Point& pixelSize)
     osm::OPTION(osm::CURSOR::OFF);
 }
 
-void TerminalDrawer::DrawFrame(const Field& field, int64_t time) {
+void TerminalDrawer::DrawFrame(const Field& field) {
     ClearScreen();
     for (int y = 0; y < FieldSize.y; y++) {
         for (int x = 0; x < FieldSize.x; x++) {
@@ -57,24 +60,32 @@ void TerminalDrawer::DrawFrame(const Field& field, int64_t time) {
     }    
     Canvas.refresh();
 
-    DrawTime(time);
+    DrawLineCount();
+    DrawTime();
     osm::cout << '\n' << std::flush;
 }
 
-void TerminalDrawer::DrawTime(int ms) {
-    static int64_t sumTimes = 0;
-    static int64_t calculationsCount = 0;
-    if (ms != NOT_GIVEN) {
-        LastCalculationTime = ms;
-        ++calculationsCount;
-        sumTimes += ms;
-    }
+void TerminalDrawer::UpdateCalculationTime(int time) {
+    LastCalculationTime = time;
+    SumOfCalculationTimes += time;
+    ++CalculationCount;
+}
+
+void TerminalDrawer::UpdateLineCount(int newLineCount) {
+    LineCount = newLineCount;
+}
+
+void TerminalDrawer::DrawLineCount() {
+    osm::cout << "             Lines: " << LineCount << '\n'; 
+}
+
+void TerminalDrawer::DrawTime() {
     if (LastCalculationTime == NOT_GIVEN) {
         return;
     }
 
     osm::cout << "      " << MillisecondsToString(LastCalculationTime) << "\n"
-              << "mean: " << MillisecondsToString(sumTimes / calculationsCount) << "\n";
+              << "mean: " << MillisecondsToString(SumOfCalculationTimes / CalculationCount) << "\n";
 }
 
 void TerminalDrawer::ClearScreen() {

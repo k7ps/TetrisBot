@@ -6,18 +6,22 @@
 #include <osmanip/graphics/canvas.hpp>
 
 
-const int64_t NOT_GIVEN = -1;
+const int NOT_GIVEN = 1;
 
 class TerminalDrawer {
 public:
     TerminalDrawer(const Point& fieldSize, const Point& pixelSize);
 
-    void DrawFrame(const Field& field, int64_t time = NOT_GIVEN);
+    void DrawFrame(const Field& field);
+
+    void UpdateCalculationTime(int time);
+    void UpdateLineCount(int newLineCount);
 
     ~TerminalDrawer();
 
 private:
-    void DrawTime(int ms);
+    void DrawLineCount();
+    void DrawTime();
     void ClearScreen();
 
 private:
@@ -27,6 +31,10 @@ private:
     osm::Canvas Canvas;     
 
     int64_t LastCalculationTime; // ms
+    int64_t SumOfCalculationTimes;
+    int64_t CalculationCount;
+
+    int LineCount;
 };
 
 #endif // DRAWER_H
