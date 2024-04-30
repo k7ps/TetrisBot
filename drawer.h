@@ -14,14 +14,14 @@ public:
 
     void DrawFrame(const Field& field);
 
-    void UpdateCalculationTime(int time);
     void UpdateLineCount(int newLineCount);
+    void UpdateCalculationTime(int time);
 
     ~TerminalDrawer();
 
 private:
     void DrawLineCount();
-    void DrawTime();
+    void DrawCalculationTime();
     void ClearScreen();
 
 private:

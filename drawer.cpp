@@ -61,14 +61,8 @@ void TerminalDrawer::DrawFrame(const Field& field) {
     Canvas.refresh();
 
     DrawLineCount();
-    DrawTime();
+    DrawCalculationTime();
     osm::cout << '\n' << std::flush;
-}
-
-void TerminalDrawer::UpdateCalculationTime(int time) {
-    LastCalculationTime = time;
-    SumOfCalculationTimes += time;
-    ++CalculationCount;
 }
 
 void TerminalDrawer::UpdateLineCount(int newLineCount) {
@@ -79,7 +73,13 @@ void TerminalDrawer::DrawLineCount() {
     osm::cout << "             Lines: " << LineCount << '\n'; 
 }
 
-void TerminalDrawer::DrawTime() {
+void TerminalDrawer::UpdateCalculationTime(int time) {
+    LastCalculationTime = time;
+    SumOfCalculationTimes += time;
+    ++CalculationCount;
+}
+
+void TerminalDrawer::DrawCalculationTime() {
     if (LastCalculationTime == NOT_GIVEN) {
         return;
     }
