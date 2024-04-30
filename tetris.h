@@ -14,8 +14,9 @@ public:
 
     void Play();
 
-    void DrawFrame(int64_t time = NOT_GIVEN);
-    void DrawFrameWithoutWait(int64_t time = NOT_GIVEN);
+private:
+    void DrawFrame();
+    void DrawFrameWithoutWait();
 
 private:
     Field TetrisField;

@@ -52,9 +52,11 @@ void Tetris::Play() {
         
         TetrisField.EraseFromStart();
         TetrisField.Put(piecePosition.pos, piecePosition.piece);
-        DrawFrame(endTime - startTime);
+        Drawer.UpdateCalculationTime(endTime - startTime);
+        DrawFrame();
 
         if (TetrisField.ClearFilledLines) {
+            Drawer.UpdateLineCount(TetrisField.GetLineCount());
             DrawFrame();
         }
     }*/
@@ -72,20 +74,22 @@ void Tetris::Play() {
 
         TetrisField.EraseFromStart();
         TetrisField.Put(b[i], GetDefaultPieceByType(a[i]));
-        DrawFrame(500 + rand() % 1500);
+        Drawer.UpdateCalculationTime(500 + rand() % 1500);
+        DrawFrame();
 
         if (TetrisField.ClearFilledLines()) {
+            Drawer.UpdateLineCount(TetrisField.GetLineCount());
             DrawFrame();
         }               
     }
 }
 
-void Tetris::DrawFrameWithoutWait(int64_t time) {
-    Drawer.DrawFrame(TetrisField, time);
+void Tetris::DrawFrameWithoutWait() {
+    Drawer.DrawFrame(TetrisField);
 }
 
-void Tetris::DrawFrame(int64_t time) {
-    DrawFrameWithoutWait(time);
+void Tetris::DrawFrame() {
+    DrawFrameWithoutWait();
     std::this_thread::sleep_for(std::chrono::milliseconds(Settings::FrameTime));
 }
 
