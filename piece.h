@@ -20,17 +20,19 @@ enum PieceType {
 };
 
 const std::vector<Piece>& GetAllRotations(PieceType type);
-const Piece& GetDefaultPieceByType(PieceType type);
+const Piece& GetPiece(PieceType type, unsigned int rotation);
+const Piece& GetDefaultPiece(PieceType type);
 
 struct PiecePosition {
     PiecePosition()
-        : piece(4, std::vector<int8_t>(4)) {}
+        : Type(static_cast<PieceType>(10)), Rotation(0) {}
 
-    PiecePosition(const Point& position, const Piece& p)
-        : pos(position), piece(p) {}
+    PiecePosition(const Point& p, PieceType t, unsigned int r = 0)
+        : Pos(p), Type(t), Rotation(r) {}
 
-    Point pos;
-    Piece piece;
+    Point Pos;
+    PieceType Type;
+    unsigned int Rotation; 
 };
 
 #endif // PIECE_H

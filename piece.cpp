@@ -1,6 +1,18 @@
 #include "piece.h"
 
 #include <exception>
+#include <string>
+
+
+namespace {
+
+    void ThrowIfNotInRange(int i, int l, int r, const std::string& msg) {
+        if (i < l || i > r) {
+            throw std::invalid_argument(msg);
+        }
+    }
+
+}
 
 
 const std::vector<Piece>& GetAllRotations(PieceType type) {
@@ -105,13 +117,19 @@ const std::vector<Piece>& GetAllRotations(PieceType type) {
     };
     
     int i = type;
-    if (i > 6) {
-        throw std::invalid_argument("GetAllRotations(): no such piece type");
-    }
+    ThrowIfNotInRange(i, 0, PiecesRotations.size() - 1, "GetAllRotations(): no such type");
+
     return PiecesRotations[i];
 }
 
-const Piece& GetDefaultPieceByType(PieceType type){
-    return GetAllRotations(type)[0];
+const Piece& GetPiece(PieceType type, unsigned int rotation) {
+    const auto& rotations = GetAllRotations(type);
+    ThrowIfNotInRange(rotation, 0, rotations.size() - 1, "GetPiece(): no such rotation");
+
+    return rotations[rotation];
+}
+
+const Piece& GetDefaultPiece(PieceType type) {
+    return GetPiece(type, 0);
 }
 
