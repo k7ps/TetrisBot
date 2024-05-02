@@ -51,7 +51,7 @@ void Tetris::Play() {
         auto endTime = GetCurrentTime();
         
         TetrisField.EraseFromStart();
-        TetrisField.Put(piecePosition.pos, piecePosition.piece);
+        TetrisField.Put(piecePosition);
         Drawer.UpdateCalculationTime(endTime - startTime);
         DrawFrame();
 
@@ -73,7 +73,7 @@ void Tetris::Play() {
         DrawFrame();
 
         TetrisField.EraseFromStart();
-        TetrisField.Put(b[i], GetDefaultPieceByType(a[i]));
+        TetrisField.Put(b[i], GetDefaultPiece(a[i]));
         Drawer.UpdateCalculationTime(500 + rand() % 1500);
         DrawFrame();
 

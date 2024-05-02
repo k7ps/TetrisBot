@@ -43,20 +43,23 @@ bool Field::PutAtStart(PieceType type) {
     int8_t right = 0;
     int8_t up = 0;
      
-    PieceAtStart.piece = GetDefaultPieceByType(type);
+    const auto& piece = GetDefaultPiece(type);
 
-    for (int8_t y = 0; y < PieceAtStart.piece.size(); y++) {
-        for (int8_t x = 0; x < PieceAtStart.piece[y].size(); x++) {
-            if (PieceAtStart.piece[y][x]) {
+    for (int8_t y = 0; y < piece.size(); y++) {
+        for (int8_t x = 0; x < piece[y].size(); x++) {
+            if (piece[y][x]) {
                 right = std::max(right, x);
                 up = std::max(up, y);
             }
         }
     }
 
-    PieceAtStart.pos = Point((Size.x - right - 1) / 2, Size.y - up - 1);
+    PieceAtStart = PiecePosition(
+        Point((Size.x - right - 1) / 2, Size.y - up - 1), 
+        type
+    );
 
-    HaveAtStart = Put(PieceAtStart.pos, PieceAtStart.piece);
+    HaveAtStart = Put(PieceAtStart);
     return HaveAtStart;
 }
 
@@ -94,7 +97,24 @@ bool Field::EraseFromStart() {
         return false;
     }
 
-    return Erase(PieceAtStart.pos, PieceAtStart.piece);
+    return Erase(PieceAtStart);
+}
+
+
+bool Field::CanPut(const PiecePosition& piecePos) const {
+    return CanPut(piecePos.Pos, GetPiece(piecePos.Type, piecePos.Rotation));
+}
+
+bool Field::Put(const PiecePosition& piecePos) {
+    return Put(piecePos.Pos, GetPiece(piecePos.Type, piecePos.Rotation));
+}
+
+bool Field::CanErase(const PiecePosition& piecePos) const {
+    return CanErase(piecePos.Pos, GetPiece(piecePos.Type, piecePos.Rotation));
+}
+
+bool Field::Erase(const PiecePosition& piecePos) {
+    return Erase(piecePos.Pos, GetPiece(piecePos.Type, piecePos.Rotation));
 }
 
 bool Field::ClearFilledLines() {
@@ -106,7 +126,7 @@ bool Field::ClearFilledLines() {
                 isFilled = 0;
             }    
         }
-        
+
         if (isFilled) {
             filledLines.push_back(y);
             ++LineCount;
