@@ -10,7 +10,6 @@
 #include <vector>
 
 struct Bot {
-    Bot() {};
     static PiecePosition GetBestPiecePosition(Field&, PieceType, const std::deque<PieceType>&);
 };
 
