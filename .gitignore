@@ -4,4 +4,4 @@ build
 # vim work files
 *~
 *.swp
-
+.vscode/

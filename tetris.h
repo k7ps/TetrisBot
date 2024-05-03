@@ -5,7 +5,7 @@
 #include "field.h"
 #include "piece.h"
 
-#include <queue>
+#include <deque>
 
 
 class Tetris {
@@ -21,7 +21,7 @@ private:
 private:
     Field TetrisField;
     TerminalDrawer Drawer;
-    std::queue<PieceType> NextPieces;
+    std::deque<PieceType> NextPieces;
 };
 
 #endif // TETRIS_H 

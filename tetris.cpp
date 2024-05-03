@@ -1,5 +1,6 @@
 #include "tetris.h"
 #include "settings.h"
+#include "bot.h"
 
 #include <chrono>
 #include <ctime>
@@ -31,27 +32,27 @@ Tetris::Tetris()
     srandom(time(0));
 
     for (int i = 0; i < Settings::KnownPiecesCount; i++) {
-        NextPieces.push(GetRandomPiece());
+        NextPieces.push_back(GetRandomPiece());
     }
 }
 
 void Tetris::Play() {
-    /*DrawFrame();
+    DrawFrame();
 
     while (true) {
         auto curPiece = NextPieces.front();
-        NextPiece.pop();
-        NextPiece.push(GetRandomPiece());
+        NextPieces.pop_front();
+        NextPieces.push_back(GetRandomPiece());
 
         TetrisField.PutAtStart(curPiece);
         DrawFrameWithoutWait();
 
         auto startTime = GetCurrentTime();
-        auto piecePosition = Bot.GetBestPiecePosition(TetrisField, curPiece, NextPieces);
+        auto piecePosition = Bot::GetBestPiecePosition(TetrisField, curPiece, NextPieces);
         auto endTime = GetCurrentTime();
         
         TetrisField.EraseFromStart();
-        TetrisField.Put(piecePosition.pos, piecePosition.piece);
+        TetrisField.Put(piecePosition);
         Drawer.UpdateCalculationTime(endTime - startTime);
         DrawFrame();
 
@@ -59,29 +60,29 @@ void Tetris::Play() {
             Drawer.UpdateLineCount(TetrisField.GetLineCount());
             DrawFrame();
         }
-    }*/
-
-    std::vector<PieceType> a = {
-        PieceType::I, PieceType::Z, PieceType::O, PieceType::Z, PieceType::T, PieceType::S, PieceType::L};
-    std::vector<Point> b = {
-        Point(0,0), Point(3,0), Point(0,1), Point(5,0), Point(7,0), Point(0,3), Point(2,1)};
-
-    DrawFrame();
-
-    for (int i=0; i<a.size(); i++) {
-        TetrisField.PutAtStart(a[i]);
-        DrawFrame();
-
-        TetrisField.EraseFromStart();
-        TetrisField.Put(b[i], GetDefaultPieceByType(a[i]));
-        Drawer.UpdateCalculationTime(500 + rand() % 1500);
-        DrawFrame();
-
-        if (TetrisField.ClearFilledLines()) {
-            Drawer.UpdateLineCount(TetrisField.GetLineCount());
-            DrawFrame();
-        }               
     }
+
+    // std::vector<PieceType> a = {
+    //     PieceType::I, PieceType::Z, PieceType::O, PieceType::Z, PieceType::T, PieceType::S, PieceType::L};
+    // std::vector<Point> b = {
+    //     Point(0,0), Point(3,0), Point(0,1), Point(5,0), Point(7,0), Point(0,3), Point(2,1)};
+
+    // DrawFrame();
+
+    // for (int i=0; i<a.size(); i++) {
+    //     TetrisField.PutAtStart(a[i]);
+    //     DrawFrame();
+
+    //     TetrisField.EraseFromStart();
+    //     TetrisField.Put(b[i], GetDefaultPiece(a[i]));
+    //     Drawer.UpdateCalculationTime(500 + rand() % 1500);
+    //     DrawFrame();
+
+    //     if (TetrisField.ClearFilledLines()) {
+    //         Drawer.UpdateLineCount(TetrisField.GetLineCount());
+    //         DrawFrame();
+    //     }               
+    // }
 }
 
 void Tetris::DrawFrameWithoutWait() {

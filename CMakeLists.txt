@@ -13,6 +13,7 @@ add_executable(${ProjectName}
     field.cpp 
     drawer.cpp 
     tetris.cpp
+    bot.cpp
 )
 
 target_link_libraries(${ProjectName} osmanip::osmanip)
