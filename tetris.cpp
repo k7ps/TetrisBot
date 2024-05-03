@@ -55,7 +55,7 @@ void Tetris::Play() {
         Drawer.UpdateCalculationTime(endTime - startTime);
         DrawFrame();
 
-        if (TetrisField.ClearFilledLines) {
+        if (TetrisField.ClearFilledLines()) {
             Drawer.UpdateLineCount(TetrisField.GetLineCount());
             DrawFrame();
         }
