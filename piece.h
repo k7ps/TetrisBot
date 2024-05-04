@@ -43,8 +43,12 @@ private:
 
 const std::vector<Piece>& GetAllRotations(PieceType type);
 int GetRotationCount(PieceType type);
+
 const Piece& GetPiece(PieceType type, unsigned int rotation);
 const Piece& GetDefaultPiece(PieceType type);
+
+int GetPieceHeight(PieceType type, unsigned int rotation = 0);
+int GetPieceWidth(PieceType type, unsigned int rotation = 0);
 
 struct PiecePosition {
     PiecePosition()

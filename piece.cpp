@@ -86,3 +86,11 @@ const Piece& GetDefaultPiece(PieceType type) {
     return GetPiece(type, 0);
 }
 
+int GetPieceHeight(PieceType type, unsigned int rotation) {
+    return GetPiece(type, rotation).GetHeight();
+}
+
+int GetPieceWidth(PieceType type, unsigned int rotation) {
+    return GetPiece(type, rotation).GetWidth();
+}
+
