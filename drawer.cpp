@@ -36,7 +36,6 @@ TerminalDrawer::TerminalDrawer(const Point& fieldSize, const Point& pixelSize)
     , LineCount(0)
 {
     osm::OPTION(osm::CURSOR::OFF);
-    std::cout << "something\n";
 }
 
 void TerminalDrawer::DrawFrame(const Field& field) {
@@ -60,7 +59,7 @@ void TerminalDrawer::DrawNextPieces() {
     Point pos((FieldSize.x - GetPieceWidth(NextPieces[0])) / 2, 0);
     for (auto type : NextPieces) {
         for (auto point : GetDefaultPiece(type)) {
-            DrawPixel(canvas, pos.x + point.x, size.y - pos.y - point.y - 2, (int)type, 1);
+            DrawPixel(canvas, pos.x + point.x, size.y - pos.y - point.y - 2, (int)type, true);
         }   
 
         pos.x += GetPieceWidth(type) + 2;
