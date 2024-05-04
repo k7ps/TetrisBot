@@ -72,8 +72,8 @@ void Tetris::Play() {
         TetrisField.PutAtStart(a[i]);
         DrawFrame();
 
-        TetrisField.EraseFromStart();
-        TetrisField.Put(b[i], GetDefaultPiece(a[i]));
+        TetrisField.EraseLastAddedPiece();
+        TetrisField.Put(PiecePosition(b[i], a[i]));
         Drawer.UpdateCalculationTime(500 + rand() % 1500);
         DrawFrame();
 
@@ -82,6 +82,9 @@ void Tetris::Play() {
             DrawFrame();
         }               
     }
+
+    TetrisField.EraseLastAddedPiece();
+    DrawFrame();
 }
 
 void Tetris::DrawFrameWithoutWait() {

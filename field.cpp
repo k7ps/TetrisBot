@@ -10,9 +10,19 @@ Field::Field(const Point& size)
     , LineCount(0)
 {}
 
-bool Field::CanPut(const Point& pos, const Piece& piece) const { 
-    for (const auto& point : piece) {
-        Point p(pos.x + point.x, pos.y + point.y);  
+bool Field::PutAtStart(PieceType type) {
+    PieceAtStart = PiecePosition(
+        Point((Size.x - GetPieceWidth(type) - 1) / 2, Size.y - GetPieceHeight(type) - 1), 
+        type
+    );
+
+    HaveAtStart = Put(PieceAtStart);
+    return HaveAtStart;
+}
+
+bool Field::CanPut(const PiecePosition& piecePos) const {
+    for (const auto& point : GetPiece(piecePos.Type, piecePos.Rotation)) {
+        Point p(piecePos.Pos.x + point.x, piecePos.Pos.y + point.y);  
         if (p.x >= Size.x || p.y >= Size.y || Data[p.y][p.x] != 0) {
             return false;
         }
@@ -20,77 +30,53 @@ bool Field::CanPut(const Point& pos, const Piece& piece) const {
     return true;
 }
 
-bool Field::Put(const Point& pos, const Piece& piece) {
-    if (!CanPut(pos, piece)) {
+bool Field::Put(const PiecePosition& piecePos) {
+    if (!CanPut(piecePos)) {
         return false;
     }
 
-    for (const auto& point : piece) {
-        Data[pos.y + point.y][pos.x + point.x] = piece.Type;
+    for (const auto& point : GetPiece(piecePos.Type, piecePos.Rotation)) {
+        Data[piecePos.Pos.y + point.y][piecePos.Pos.x + point.x] = piecePos.Type;
     }
+
+    Events.push(Event(piecePos));
     return true;
 }
 
-bool Field::PutAtStart(PieceType type) {
-    const auto& piece = GetDefaultPiece(type);
-
-    PieceAtStart = PiecePosition(
-        Point((Size.x - piece.GetWidth() - 1) / 2, Size.y - piece.GetHeight() - 1), 
-        piece.Type
-    );
-
-    HaveAtStart = Put(PieceAtStart);
-    return HaveAtStart;
+bool Field::PutAndClearFilledLines(const PiecePosition& piecePos) {
+    if (!Put(piecePos)) {
+        return false;
+    }
+    ClearFilledLines();
+    return true;
 }
 
-bool Field::CanErase(const Point& pos, const Piece& piece) const {
-    for (const auto& point : piece) {
-        Point p(pos.x + point.x, pos.y + point.y);  
-        if (p.x >= Size.x || p.y >= Size.y || Data[p.y][p.x] == 0) {
-            return false;
+void Field::Erase(const PiecePosition& piecePos) {
+    for (const auto& point : GetPiece(piecePos.Type, piecePos.Rotation)) {
+        Data[piecePos.Pos.y + point.y][piecePos.Pos.x + point.x] = 0;
+    }
+}
+
+void Field::EraseLastAddedPiece() {
+    if (Events.empty()) {
+        return;
+    }
+
+    while (Events.top().Type != Event::ADD_PIECE) {
+        const auto& top = Events.top();
+        RestoreClearedLines(top.Heights, top.ClearedLines);
+        Events.pop();
+        if (Events.empty()) {
+            return;
         }
     }
-    return true;
-}
 
-bool Field::Erase(const Point& pos, const Piece& piece) {
-    if (!CanErase(pos, piece)) {
-        return false;
-    }
-
-    for (const auto& point : piece) {
-        Data[pos.y + point.y][pos.x + point.x] = 0;
-    }
-    return true;
-}
-
-bool Field::EraseFromStart() {
-    if (!HaveAtStart) {
-        return false;
-    }
-
-    return Erase(PieceAtStart);
-}
-
-
-bool Field::CanPut(const PiecePosition& piecePos) const {
-    return CanPut(piecePos.Pos, GetPiece(piecePos.Type, piecePos.Rotation));
-}
-
-bool Field::Put(const PiecePosition& piecePos) {
-    return Put(piecePos.Pos, GetPiece(piecePos.Type, piecePos.Rotation));
-}
-
-bool Field::CanErase(const PiecePosition& piecePos) const {
-    return CanErase(piecePos.Pos, GetPiece(piecePos.Type, piecePos.Rotation));
-}
-
-bool Field::Erase(const PiecePosition& piecePos) {
-    return Erase(piecePos.Pos, GetPiece(piecePos.Type, piecePos.Rotation));
+    Erase(Events.top().AddedPiece);
+    Events.pop();
 }
 
 bool Field::ClearFilledLines() {
-    std::vector<int> filledLines;
+    std::vector<int> heights;
     for (int y = 0; y < Size.y; y++) {
         bool isFilled = 1;
         for (int x = 0; x < Size.x; x++) {
@@ -100,17 +86,20 @@ bool Field::ClearFilledLines() {
         }
 
         if (isFilled) {
-            filledLines.push_back(y);
+            heights.push_back(y);
             ++LineCount;
         }
     }
 
-    if (filledLines.empty())
+    if (heights.empty()) {
         return false;
+    }
+    std::vector<std::vector<int8_t>> filledLines;  
 
     int cur = 0;
     for (int y = 0; y < Size.y; y++) {
-        if (filledLines[cur] == y) {
+        if (heights[cur] == y) {
+            filledLines.emplace_back(Data[y].begin(), Data[y].end());
             for (int x = 0; x < Size.x; x++) {
                 Data[y][x] = 0;
             }
@@ -122,6 +111,34 @@ bool Field::ClearFilledLines() {
             }
         }
     }
+
+    Events.push(Event(std::move(heights), std::move(filledLines)));
     return true;
+}
+
+void Field::RestoreClearedLines(
+    const std::vector<int>& heights, 
+    const std::vector<std::vector<int8_t>>& lines
+) {
+    int n = heights.size();
+    LineCount -= n;
+
+    int cur = n - 1;
+    for (int y = Size.y - 1; y >= 0; y--) {
+        if (y + cur + 1 < Size.y) {
+            for (int x = 0; x < Size.x; x++) {
+                Data[y + cur + 1][x] = Data[y][x];
+                Data[y][x] = 0;
+            }
+        }
+        if (heights[cur] == y) {
+            for (int x = 0; x < Size.x; x++) {
+                Data[y][x] = lines[cur][x];
+            }
+            if (--cur == -1) {
+                break;
+            }
+        }
+    }
 }
 

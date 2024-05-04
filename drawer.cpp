@@ -90,7 +90,7 @@ void TerminalDrawer::DrawCalculationTime() {
 
 void TerminalDrawer::ClearScreen() {
     system("clear");
-    Canvas.clear();
+    //Canvas.clear();
 }
     
 TerminalDrawer::~TerminalDrawer() {
