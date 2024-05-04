@@ -5,3 +5,6 @@ build
 *~
 *.swp
 
+# some instruments
+util
+
