@@ -1,11 +1,9 @@
 #include "bot.h"
 
-#include <algorithm>
-
 
 namespace {
 
-     int CountRow(const Field& Field, int y){
+    int CountRow(const Field& Field, int y){
         int count = 0;
         for (int x = 0; x < Field.GetSize().x; x++){
             if (Field[y][x]) count++;
@@ -16,13 +14,17 @@ namespace {
 
     bool IsEpmtyRow(const Field& Field, int y){
         for (int x = 0; x < Field.GetSize().x; x++){
-            if (Field[y][x]) return false;
+            if (Field[y][x]) {
+                 return false;
+            }
         }
         return true;
     }
     bool IsFullRow(const Field& Field, int y){
         for (int x = 0; x < Field.GetSize().x; x++){
-            if (!Field[y][x]) return false;
+            if (!Field[y][x]) { 
+                return false;
+            }
         }
         return true;
     }
@@ -48,7 +50,6 @@ namespace {
         }
         return score;
     }
-
 
     void FindSolution(Field& Field, std::deque<PieceType>& NextPieces, bool first_object,
                         double& Best_number, PiecePosition& Best_Piece, PiecePosition Curr_Piece){
@@ -96,5 +97,5 @@ PiecePosition Bot::GetBestPiecePosition(Field& Field, PieceType Type,
     NextPieces_Copy.push_front(Type);
     FindSolution(Field, NextPieces_Copy, true, Best_number, Best_Piece, Curr_Piece);
 
-    return Best_Piece; // ? копия ли нужна
+    return Best_Piece;
 }
