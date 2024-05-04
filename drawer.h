@@ -5,6 +5,8 @@
 
 #include <osmanip/graphics/canvas.hpp>
 
+#include <vector>
+
 
 const int NOT_GIVEN = 1;
 
@@ -12,29 +14,35 @@ class TerminalDrawer {
 public:
     TerminalDrawer(const Point& fieldSize, const Point& pixelSize);
 
-    void DrawFrame(const Field& field);
+    void DrawFrame(const Field&);
 
-    void UpdateLineCount(int newLineCount);
-    void UpdateCalculationTime(int time);
+    void UpdateLineCount(int);
+    void UpdateCalculationTime(int);
+    void UpdateNextPieces(const std::deque<PieceType>&);
 
     ~TerminalDrawer();
 
 private:
+    void DrawNextPieces();
+    void DrawField(const Field&);
     void DrawLineCount();
     void DrawCalculationTime();
+
     void ClearScreen();
+
+    void DrawPixel(osm::Canvas&, int x, int y, int color, bool haveBorder);
 
 private:
     Point FieldSize;
     Point PixelSize;
-
-    osm::Canvas Canvas;     
 
     int64_t LastCalculationTime; // ms
     int64_t SumOfCalculationTimes;
     int64_t CalculationCount;
 
     int LineCount;
+
+    std::vector<PieceType> NextPieces;
 };
 
 #endif // DRAWER_H
