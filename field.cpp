@@ -12,7 +12,7 @@ Field::Field(const Point& size)
 
 bool Field::PutAtStart(PieceType type) {
     PieceAtStart = PiecePosition(
-        Point((Size.x - GetPieceWidth(type) - 1) / 2, Size.y - GetPieceHeight(type) - 1), 
+        Point((Size.x - GetPieceWidth(type)) / 2, Size.y - GetPieceHeight(type)), 
         type
     );
 

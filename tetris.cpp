@@ -10,7 +10,7 @@
 namespace {
     
     PieceType GetRandomPiece() {
-        return static_cast<PieceType>(rand() % 7);
+        return static_cast<PieceType>(1 + rand() % 7);
     }
 
     int64_t GetCurrentTime() {
@@ -31,7 +31,7 @@ Tetris::Tetris()
     srandom(time(0));
 
     for (int i = 0; i < Settings::KnownPiecesCount; i++) {
-        NextPieces.push(GetRandomPiece());
+        NextPieces.push_back(GetRandomPiece());
     }
 }
 
@@ -40,8 +40,8 @@ void Tetris::Play() {
 
     while (true) {
         auto curPiece = NextPieces.front();
-        NextPiece.pop();
-        NextPiece.push(GetRandomPiece());
+        NextPiece.pop_front();
+        NextPiece.push_back(GetRandomPiece());
 
         TetrisField.PutAtStart(curPiece);
         DrawFrameWithoutWait();
@@ -66,9 +66,19 @@ void Tetris::Play() {
     std::vector<Point> b = {
         Point(0,0), Point(3,0), Point(0,1), Point(5,0), Point(7,0), Point(0,3), Point(2,1)};
 
+    NextPieces.clear();
+    for (int i=0; i < Settings::KnownPiecesCount; i++)
+       NextPieces.push_back(a[i]); 
+
+    Drawer.UpdateNextPieces(NextPieces);
     DrawFrame();
 
     for (int i=0; i<a.size(); i++) {
+        NextPieces.pop_front();
+        if (i + Settings::KnownPiecesCount < a.size())
+            NextPieces.push_back(a[i + Settings::KnownPiecesCount]);
+        Drawer.UpdateNextPieces(NextPieces);
+
         TetrisField.PutAtStart(a[i]);
         DrawFrame();
 

@@ -22,8 +22,8 @@ Piece::Piece(PieceType type, std::vector<Point>&& data)
         throw std::invalid_argument("Piece::Piece(): Data.size() != 4");
     }    
     for (const auto& point : Data) {
-        Height = std::max(Height, point.y);
-        Width = std::max(Width, point.x);
+        Height = std::max(Height, point.y + 1);
+        Width = std::max(Width, point.x + 1);
     }
 }
 
