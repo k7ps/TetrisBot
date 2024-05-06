@@ -2,6 +2,16 @@
 
 #include <algorithm>
 
+namespace {
+    void Print(const std::vector<std::vector<int8_t>>& m) {
+        for (int y=m.size()-1; y>=0; y--) {
+            for (int x=0; x<m[y].size(); x++) {
+                std::cout << (int)m[y][x] << ' ';
+            }
+            std::cout << '\n';
+        }
+    }
+};
 
 Field::Field(const Point& size)
     : Size(size)
@@ -62,7 +72,9 @@ void Field::EraseLastAddedPiece() {
         return;
     }
 
+    int dl=0;
     while (Events.top().Type != Event::ADD_PIECE) {
+        dl++;
         const auto& top = Events.top();
         RestoreClearedLines(top.Heights, top.ClearedLines);
         Events.pop();
@@ -120,25 +132,24 @@ void Field::RestoreClearedLines(
     const std::vector<int>& heights, 
     const std::vector<std::vector<int8_t>>& lines
 ) {
-    int n = heights.size();
-    LineCount -= n;
+    std::vector<std::vector<int8_t>> newData(Size.y, std::vector<int8_t>(Size.x));
 
-    int cur = n - 1;
-    for (int y = Size.y - 1; y >= 0; y--) {
-        if (y + cur + 1 < Size.y) {
+    int linesIdx = 0;
+    int oldDataIdx = 0;
+    for (int y = 0; y < Size.y; y++) {
+        if (linesIdx < heights.size() && heights[linesIdx] == y) {
             for (int x = 0; x < Size.x; x++) {
-                Data[y + cur + 1][x] = Data[y][x];
-                Data[y][x] = 0;
-            }
-        }
-        if (heights[cur] == y) {
+                newData[y][x] = lines[linesIdx][x];
+            } 
+            ++linesIdx;
+        } else {
             for (int x = 0; x < Size.x; x++) {
-                Data[y][x] = lines[cur][x];
-            }
-            if (--cur == -1) {
-                break;
-            }
+                newData[y][x] = Data[oldDataIdx][x];
+            } 
+            ++oldDataIdx;
         }
     }
+
+    Data = newData;
 }
 
