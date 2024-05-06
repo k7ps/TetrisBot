@@ -6,9 +6,6 @@
 #include "field.h"
 
 #include <deque>
-#include <stdio.h>
-#include <omp.h>
-
 #include <vector>
 
 struct Bot {

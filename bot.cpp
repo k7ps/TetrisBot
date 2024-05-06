@@ -1,138 +1,89 @@
 #include "bot.h"
 
 
-
 namespace {
 
-    int Count_of_Filled_Point_In_Row(const Field& Field, int y) {
-        int count = 0;
-        for (int x = 0; x < Field.GetSize().x; x++) {
-            if (Field[y][x]) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    int Count_of_Holded_Point_In_Row(const Field& Field, int y) {
-        if (y >= Field.GetSize().y - 1) {
-            return 0;
-        }
-        int count = 0;
-        for (int x = 0; x < Field.GetSize().x; x++) {
-            if (!Field[y][x] && Field[y+1][x]) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-
-    bool IsEpmtyRow(const Field& Field, int y){
-        for (int x = 0; x < Field.GetSize().x; x++){
-            if (Field[y][x]) {
+    bool IsEpmtyRow(const Field& field, int y){
+        for (int x = 0; x < field.GetSize().x; x++){
+            if (field[y][x]) {
                  return false;
             }
         }
         return true;
     }
-    // bool IsFullRow(const Field& Field, int y){
-    //     for (int x = 0; x < Field.GetSize().x; x++){
-    //         if (!Field[y][x]) { 
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // }
 
-    // bool IsTouch(const Field& Field, Point p, const Piece& CurrPiece){
-    //     for (int y = 0; y < CurrPiece.size(); y++) {
-    //         for (int x = 0; x < CurrPiece[y].size(); x++) {
-    //             if (CurrPiece[y][x] && (y == 0 || !CurrPiece[y-1][x])) {
-    //                 if (p.y + y == 0 || Field[p.y + y - 1][p.x + x]) return true;
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
 
-    double Score(const Field& Field) {
-        double score = 0;
-        for (int y = 0; y < Field.GetSize().y && !IsEpmtyRow(Field, y); y++) {
-            score += Count_of_Filled_Point_In_Row(Field, y) * y;
-            score += Count_of_Holded_Point_In_Row(Field, y) * y;
+    int Score(const Field& field) {
+        int score = 0;
+        for (int y = 0; y < field.GetSize().y && !IsEpmtyRow(field, y); y++) {
+            for (int x = 0; x < field.GetSize().x; x++) {
+                if (field[y][x]) {
+                    score += y + 1;
+                } else if (y + 1 < field.GetSize().y && field[y+1][x]) {
+                    score += y + 1;
+                }
+            }
         }
         return score;
     }
 
 
-    std::vector<PiecePosition> GetAllPiecePositions(const Field& Field, PieceType Type) {
-        std::vector<PiecePosition> All_Piece_Positions;
+    std::vector<PiecePosition> GetAllPiecePositions(const Field& field, PieceType type) {
+        std::vector<PiecePosition> allPiecePositions;
 
-        for (unsigned int rot = 0; rot < GetRotationCount(Type); rot++) {
-            for (int x = 0; x < Field.GetSize().x; x++) {
-                for (int y = 0; y < Field.GetSize().y; y++) {
-                    PiecePosition Curr_Piece_Position{Point(x, y), Type, rot};
-                    if (Field.CanPut(Curr_Piece_Position)) {
-                        All_Piece_Positions.push_back(Curr_Piece_Position);
+        for (unsigned int rot = 0; rot < GetRotationCount(type); rot++) {
+            for (int x = 0; x < field.GetSize().x; x++) {
+                for (int y = 0; y < field.GetSize().y; y++) {
+                    PiecePosition currPiecePosition{Point(x, y), type, rot};
+                    if (field.CanPut(currPiecePosition)) {
+                        allPiecePositions.push_back(currPiecePosition);
                         break;
                     }
                 }
             }
         }
-        return All_Piece_Positions;
+        return allPiecePositions;
     }
 
 
-    void Get_Best_score(Field& Field, std::deque<PieceType>& NextPieces, double& Best_Score) {
-        if (NextPieces.empty()) {
-            Best_Score = std::min(Best_Score, Score(Field));
+    void GetBestScore(Field& field, std::deque<PieceType>& nextPieces, int& bestScore) {
+        if (nextPieces.empty()) {
+            bestScore = std::min(bestScore, Score(field));
             return;
         }
+        PieceType type = nextPieces.front();
+        nextPieces.pop_front();
 
-        PieceType Type = NextPieces.front();
-        NextPieces.pop_front();
-
-        for (const auto& Curr_Piece_Position: GetAllPiecePositions(Field, Type)) {
-            Field.Put(Curr_Piece_Position);
-            Get_Best_score(Field, NextPieces, Best_Score);
-            Field.EraseLastAddedPiece();
+        for (const auto& currPiecePosition: GetAllPiecePositions(field, type)) {
+            field.PutAndClearFilledLines(currPiecePosition);
+            GetBestScore(field, nextPieces, bestScore);
+            field.EraseLastAddedPiece();
         }
-        NextPieces.push_front(Type);       
+        nextPieces.push_front(type);       
     }
 }
 
 
-PiecePosition Bot::GetBestPiecePosition(const Field& _Field, PieceType Type, 
-                                        const std::deque<PieceType>& NextPieces) {
-    std::deque<PieceType> NextPieces_Copy = NextPieces;
+PiecePosition Bot::GetBestPiecePosition(const Field& field, PieceType type, 
+                                        const std::deque<PieceType>& nextPieces) {
+    std::deque<PieceType> nextPiecesCopy = nextPieces;
 
-    double Best_score = 10000.0;
-    double Curr_score = 10000.0;
-    PiecePosition Best_Piece_Position;
+    int bestScore = 10000.0;
+    int currScore = 10000.0;
+    PiecePosition bestPiecePosition;
 
-    //omp_set_num_threads(4);
+    Field fieldCopy{field};
+    for (const auto& firstPiecePosition : GetAllPiecePositions(field, type)) {
+        fieldCopy.PutAndClearFilledLines(firstPiecePosition);
 
-    const auto& First_Piece_Positions = GetAllPiecePositions(_Field, Type);
+        GetBestScore(fieldCopy, nextPiecesCopy, currScore);
+        fieldCopy.EraseLastAddedPiece();
 
-    //#pragma omp parallel num_threads(5)
-    //{
-    Field Field{_Field};
-    //#pragma omp for
-    for (int i = 0; i < First_Piece_Positions.size(); i++) {
-        const auto& First_Piece_Position = First_Piece_Positions[i];
-        Field.Put(First_Piece_Position);
-
-        Get_Best_score(Field, NextPieces_Copy, Curr_score);
-        Field.EraseLastAddedPiece();
-
-        if (Curr_score < Best_score) {
-            Best_score = Curr_score;
-            Best_Piece_Position = First_Piece_Position;
+        if (currScore < bestScore) {
+            bestScore = currScore;
+            bestPiecePosition = firstPiecePosition;
         }
-        Curr_score = 10000.0;
-    //}
+        currScore = 10000.0;
     }
-
-    return Best_Piece_Position;
+    return bestPiecePosition;
 }
