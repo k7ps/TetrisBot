@@ -2,16 +2,6 @@
 
 #include <algorithm>
 
-namespace {
-    void Print(const std::vector<std::vector<int8_t>>& m) {
-        for (int y=m.size()-1; y>=0; y--) {
-            for (int x=0; x<m[y].size(); x++) {
-                std::cout << (int)m[y][x] << ' ';
-            }
-            std::cout << '\n';
-        }
-    }
-};
 
 Field::Field(const Point& size)
     : Size(size)
@@ -72,9 +62,7 @@ void Field::EraseLastAddedPiece() {
         return;
     }
 
-    int dl=0;
     while (Events.top().Type != Event::ADD_PIECE) {
-        dl++;
         const auto& top = Events.top();
         RestoreClearedLines(top.Heights, top.ClearedLines);
         Events.pop();
