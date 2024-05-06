@@ -3,10 +3,25 @@
 
 namespace {
 
-    int CountRow(const Field& Field, int y){
+    int Count_of_Filled_Point_In_Row(const Field& Field, int y) {
         int count = 0;
-        for (int x = 0; x < Field.GetSize().x; x++){
-            if (Field[y][x]) count++;
+        for (int x = 0; x < Field.GetSize().x; x++) {
+            if (Field[y][x]) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    int Count_of_Holded_Point_In_Row(const Field& Field, int y) {
+        if (y >= Field.GetSize().y - 1) {
+            return 0;
+        }
+        int count = 0;
+        for (int x = 0; x < Field.GetSize().x; x++) {
+            if (!Field[y][x] && Field[y+1][x]) {
+                count++;
+            }
         }
         return count;
     }
@@ -20,83 +35,93 @@ namespace {
         }
         return true;
     }
-    bool IsFullRow(const Field& Field, int y){
-        for (int x = 0; x < Field.GetSize().x; x++){
-            if (!Field[y][x]) { 
-                return false;
-            }
-        }
-        return true;
-    }
+    // bool IsFullRow(const Field& Field, int y){
+    //     for (int x = 0; x < Field.GetSize().x; x++){
+    //         if (!Field[y][x]) { 
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // }
 
-    bool IsTouch(const Field& Field, Point p, const Piece& CurrPiece){
-        for (int y = 0; y < CurrPiece.size(); y++) {
-            for (int x = 0; x < CurrPiece[y].size(); x++) {
-                if (CurrPiece[y][x] && (y == 0 || !CurrPiece[y-1][x])) {
-                    if (p.y + y == 0 || Field[p.y + y - 1][p.x + x]) return true;
-                }
-            }
-        }
-        return false;
-    }
+    // bool IsTouch(const Field& Field, Point p, const Piece& CurrPiece){
+    //     for (int y = 0; y < CurrPiece.size(); y++) {
+    //         for (int x = 0; x < CurrPiece[y].size(); x++) {
+    //             if (CurrPiece[y][x] && (y == 0 || !CurrPiece[y-1][x])) {
+    //                 if (p.y + y == 0 || Field[p.y + y - 1][p.x + x]) return true;
+    //             }
+    //         }
+    //     }
+    //     return false;
+    // }
 
-    double Score(const Field& Field){
+    double Score(const Field& Field) {
         double score = 0;
-        for (int y = 0; y < Field.GetSize().y; y++){
-            double k = 1.0 + 0.05 * (Field.GetSize().y - y);
-            double count = CountRow(Field, y);
-            score += k * (1.0 + count) * count / 2.0;
-            if (IsFullRow(Field, y)) score += k * 4;
+        for (int y = 0; y < Field.GetSize().y && !IsEpmtyRow(Field, y); y++) {
+            score += Count_of_Filled_Point_In_Row(Field, y) * y;
+            score += Count_of_Holded_Point_In_Row(Field, y) * y;
         }
         return score;
     }
 
 
-    void FindSolution(Field& Field, std::deque<PieceType>& NextPieces, bool first_object,
-                        double& Best_number, PiecePosition& Best_Piece, PiecePosition Curr_Piece){
+    std::vector<PiecePosition> GetAllPiecePositions(Field& Field, PieceType Type) {
+        std::vector<PiecePosition> All_Piece_Positions;
 
-        if (NextPieces.empty()){
-            double number = Score(Field);
-            if (number > Best_number){
-                Best_number = number;
-                Best_Piece = Curr_Piece;
-            }
-            return;
-        }
-        PieceType currType = NextPieces.front();
-        NextPieces.pop_front();
-        const std::vector<Piece>& CurrRotations = GetAllRotations(currType);
-        for (int rot = 0; rot < CurrRotations.size(); rot++) {
-            const Piece& CurrPiece = CurrRotations[rot];
-
-            for (int y = 0; y < Field.GetSize().y && (y == 0 || !IsEpmtyRow(Field, y-1)); y++) {
-                for (int x = 0; x < Field.GetSize().x; x++) {
-                    Point p(x, y);
-                    if (Field.CanPut(p, CurrPiece) && IsTouch(Field, p, CurrPiece)) {
-                        Field.Put(p, CurrPiece);
-                        if (first_object){
-                            Curr_Piece = PiecePosition(p, currType, rot);
-                        } 
-                        FindSolution(Field, NextPieces, false, Best_number, Best_Piece, Curr_Piece);
-                        Field.Erase(p, CurrPiece);
+        for (unsigned int rot = 0; rot < GetRotationCount(Type); rot++) {
+            for (int x = 0; x < Field.GetSize().x; x++) {
+                for (int y = 0; y < Field.GetSize().y; y++) {
+                    PiecePosition Curr_Piece_Position{Point(x, y), Type, rot};
+                    if (Field.CanPut(Curr_Piece_Position)) {
+                        All_Piece_Positions.push_back(Curr_Piece_Position);
+                        break;
                     }
                 }
             }
         }
-        NextPieces.push_front(currType);
+        return All_Piece_Positions;
+    }
+
+
+    void Get_Best_score(Field& Field, std::deque<PieceType>& NextPieces, double& Best_Score) {
+        if (NextPieces.empty()) {
+            Best_Score = std::min(Best_Score, Score(Field));
+            return;
+        }
+
+        PieceType Type = NextPieces.front();
+        NextPieces.pop_front();
+
+        for (const auto& Curr_Piece_Position: GetAllPiecePositions(Field, Type)) {
+            Field.Put(Curr_Piece_Position);
+            Get_Best_score(Field, NextPieces, Best_Score);
+            Field.EraseLastAddedPiece();
+        }
+        NextPieces.push_front(Type);       
     }
 }
 
+
 PiecePosition Bot::GetBestPiecePosition(Field& Field, PieceType Type, 
-                                        const std::deque<PieceType>& NextPieces){
+                                        const std::deque<PieceType>& NextPieces) {
     std::deque<PieceType> NextPieces_Copy = NextPieces;
 
-    double Best_number = 0.0;
-    PiecePosition Best_Piece;
-    PiecePosition Curr_Piece;
+    double Best_score = 10000.0;
+    double Curr_score = 10000.0;
+    PiecePosition Best_Piece_Position;
 
-    NextPieces_Copy.push_front(Type);
-    FindSolution(Field, NextPieces_Copy, true, Best_number, Best_Piece, Curr_Piece);
+    for (const auto& First_Piece_Position: GetAllPiecePositions(Field, Type)) {
+        Field.Put(First_Piece_Position);
 
-    return Best_Piece;
+        Get_Best_score(Field, NextPieces_Copy, Curr_score);
+        Field.EraseLastAddedPiece();
+
+        if (Curr_score < Best_score) {
+            Best_score = Curr_score;
+            Best_Piece_Position = First_Piece_Position;
+        }
+        Curr_score = 10000.0;
+    }
+
+    return Best_Piece_Position;
 }

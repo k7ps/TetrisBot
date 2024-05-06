@@ -14,7 +14,7 @@ namespace Settings {
 
     const int KnownPiecesCount = 2;
     
-    const int FrameTime = 1000; // ms
+    const int FrameTime = 500; // ms
 
     const std::vector<std::string> PieceColors = {
         "black",

@@ -40,52 +40,29 @@ void Tetris::Play() {
     DrawFrame();
 
     while (true) {
-        auto curPiece = NextPieces.front();
-        NextPiece.pop_front();
-        NextPiece.push_back(GetRandomPiece());
 
-        TetrisField.PutAtStart(curPiece);
+        NextPieces.push_back(GetRandomPiece());
+
+        Drawer.UpdateNextPieces(NextPieces);
+        //DrawFrame();
+
+        auto curPiece = NextPieces.front();
+        NextPieces.pop_front();
+
+        //Drawer.UpdateNextPieces(NextPieces);
+
+        //TetrisField.PutAtStart(curPiece);
+        //DrawFrame();
         DrawFrameWithoutWait();
 
         auto startTime = GetCurrentTime();
         auto piecePosition = Bot::GetBestPiecePosition(TetrisField, curPiece, NextPieces);
         auto endTime = GetCurrentTime();
         
-        TetrisField.EraseFromStart();
+        //TetrisField.EraseLastAddedPiece();
         TetrisField.Put(piecePosition);
+        
         Drawer.UpdateCalculationTime(endTime - startTime);
-        DrawFrame();
-
-        if (TetrisField.ClearFilledLines) {
-            Drawer.UpdateLineCount(TetrisField.GetLineCount());
-            DrawFrame();
-        }
-    }*/
-
-    std::vector<PieceType> a = {
-        PieceType::I, PieceType::Z, PieceType::O, PieceType::Z, PieceType::T, PieceType::S, PieceType::L};
-    std::vector<Point> b = {
-        Point(0,0), Point(3,0), Point(0,1), Point(5,0), Point(7,0), Point(0,3), Point(2,1)};
-
-    NextPieces.clear();
-    for (int i=0; i < Settings::KnownPiecesCount; i++)
-       NextPieces.push_back(a[i]); 
-
-    Drawer.UpdateNextPieces(NextPieces);
-    DrawFrame();
-
-    for (int i=0; i<a.size(); i++) {
-        NextPieces.pop_front();
-        if (i + Settings::KnownPiecesCount < a.size())
-            NextPieces.push_back(a[i + Settings::KnownPiecesCount]);
-        Drawer.UpdateNextPieces(NextPieces);
-
-        TetrisField.PutAtStart(a[i]);
-        DrawFrame();
-
-        TetrisField.EraseLastAddedPiece();
-        TetrisField.Put(PiecePosition(b[i], a[i]));
-        Drawer.UpdateCalculationTime(500 + rand() % 1500);
         DrawFrame();
 
         if (TetrisField.ClearFilledLines()) {
@@ -94,8 +71,40 @@ void Tetris::Play() {
         }
     }
 
-    TetrisField.EraseLastAddedPiece();
-    DrawFrame();
+    // std::vector<PieceType> a = {
+    //     PieceType::I, PieceType::Z, PieceType::O, PieceType::Z, PieceType::T, PieceType::S, PieceType::L};
+    // std::vector<Point> b = {
+    //     Point(0,0), Point(3,0), Point(0,1), Point(5,0), Point(7,0), Point(0,3), Point(2,1)};
+
+    // NextPieces.clear();
+    // for (int i=0; i < Settings::KnownPiecesCount; i++)
+    //    NextPieces.push_back(a[i]); 
+
+    // Drawer.UpdateNextPieces(NextPieces);
+    // DrawFrame();
+
+    // for (int i=0; i<a.size(); i++) {
+    //     NextPieces.pop_front();
+    //     if (i + Settings::KnownPiecesCount < a.size())
+    //         NextPieces.push_back(a[i + Settings::KnownPiecesCount]);
+    //     Drawer.UpdateNextPieces(NextPieces);
+
+    //     TetrisField.PutAtStart(a[i]);
+    //     DrawFrame();
+
+    //     TetrisField.EraseLastAddedPiece();
+    //     TetrisField.Put(PiecePosition(b[i], a[i]));
+    //     Drawer.UpdateCalculationTime(500 + rand() % 1500);
+    //     DrawFrame();
+
+    //     if (TetrisField.ClearFilledLines()) {
+    //         Drawer.UpdateLineCount(TetrisField.GetLineCount());
+    //         DrawFrame();
+    //     }
+    // }
+
+    // TetrisField.EraseLastAddedPiece();
+    // DrawFrame();
 }
 
 void Tetris::DrawFrameWithoutWait() {
