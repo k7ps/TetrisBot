@@ -1,4 +1,6 @@
 #include "bot.h"
+#include <stdio.h>
+#include <omp.h>
 
 
 namespace {
@@ -110,6 +112,9 @@ PiecePosition Bot::GetBestPiecePosition(Field& Field, PieceType Type,
     double Curr_score = 10000.0;
     PiecePosition Best_Piece_Position;
 
+    omp_set_num_threads(5);
+
+    #pragma omp parallel for
     for (const auto& First_Piece_Position: GetAllPiecePositions(Field, Type)) {
         Field.Put(First_Piece_Position);
 
@@ -122,6 +127,7 @@ PiecePosition Bot::GetBestPiecePosition(Field& Field, PieceType Type,
         }
         Curr_score = 10000.0;
     }
+    
 
     return Best_Piece_Position;
 }
