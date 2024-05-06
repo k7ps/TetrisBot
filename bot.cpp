@@ -51,6 +51,7 @@ namespace {
         return score;
     }
 
+
     void FindSolution(Field& Field, std::deque<PieceType>& NextPieces, bool first_object,
                         double& Best_number, PiecePosition& Best_Piece, PiecePosition Curr_Piece){
 
