@@ -31,6 +31,10 @@ class Field {
 public:
     Field(const Point& size);
 
+    Field(const Field&);
+
+    Field& operator=(const Field&);
+
     const int8_t* operator[](size_t index) const {
         return Data[index].data(); 
     }        

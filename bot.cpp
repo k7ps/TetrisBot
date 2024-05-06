@@ -1,6 +1,5 @@
 #include "bot.h"
-#include <stdio.h>
-#include <omp.h>
+
 
 
 namespace {
@@ -67,7 +66,7 @@ namespace {
     }
 
 
-    std::vector<PiecePosition> GetAllPiecePositions(Field& Field, PieceType Type) {
+    std::vector<PiecePosition> GetAllPiecePositions(const Field& Field, PieceType Type) {
         std::vector<PiecePosition> All_Piece_Positions;
 
         for (unsigned int rot = 0; rot < GetRotationCount(Type); rot++) {
@@ -104,7 +103,7 @@ namespace {
 }
 
 
-PiecePosition Bot::GetBestPiecePosition(Field& Field, PieceType Type, 
+PiecePosition Bot::GetBestPiecePosition(const Field& _Field, PieceType Type, 
                                         const std::deque<PieceType>& NextPieces) {
     std::deque<PieceType> NextPieces_Copy = NextPieces;
 
@@ -112,10 +111,16 @@ PiecePosition Bot::GetBestPiecePosition(Field& Field, PieceType Type,
     double Curr_score = 10000.0;
     PiecePosition Best_Piece_Position;
 
-    omp_set_num_threads(5);
+    //omp_set_num_threads(4);
 
-    #pragma omp parallel for
-    for (const auto& First_Piece_Position: GetAllPiecePositions(Field, Type)) {
+    const auto& First_Piece_Positions = GetAllPiecePositions(_Field, Type);
+
+    //#pragma omp parallel num_threads(5)
+    //{
+    Field Field{_Field};
+    //#pragma omp for
+    for (int i = 0; i < First_Piece_Positions.size(); i++) {
+        const auto& First_Piece_Position = First_Piece_Positions[i];
         Field.Put(First_Piece_Position);
 
         Get_Best_score(Field, NextPieces_Copy, Curr_score);
@@ -126,8 +131,8 @@ PiecePosition Bot::GetBestPiecePosition(Field& Field, PieceType Type,
             Best_Piece_Position = First_Piece_Position;
         }
         Curr_score = 10000.0;
+    //}
     }
-    
 
     return Best_Piece_Position;
 }

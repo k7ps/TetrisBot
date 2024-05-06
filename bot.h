@@ -6,11 +6,13 @@
 #include "field.h"
 
 #include <deque>
+#include <stdio.h>
+#include <omp.h>
 
 #include <vector>
 
 struct Bot {
-    static PiecePosition GetBestPiecePosition(Field&, PieceType, const std::deque<PieceType>&);
+    static PiecePosition GetBestPiecePosition(const Field&, PieceType, const std::deque<PieceType>&);
 };
 
 
