@@ -27,7 +27,6 @@ Piece::Piece(PieceType type, std::vector<Point>&& data)
     }
 }
 
-
 const std::vector<Piece>& GetAllRotations(PieceType type) {
     static const std::vector<std::vector<Piece>> PiecesRotations = {
         {

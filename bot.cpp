@@ -1,4 +1,7 @@
 #include "bot.h"
+#include "point.h"
+
+#include <vector>
 
 
 namespace {
@@ -11,7 +14,6 @@ namespace {
         }
         return true;
     }
-
 
     int Score(const Field& field) {
         int score = 0;
@@ -26,7 +28,6 @@ namespace {
         }
         return score;
     }
-
 
     std::vector<PiecePosition> GetAllPiecePositions(const Field& field, PieceType type) {
         std::vector<PiecePosition> allPiecePositions;
@@ -45,7 +46,6 @@ namespace {
         return allPiecePositions;
     }
 
-
     void GetBestScore(Field& field, std::deque<PieceType>& nextPieces, int& bestScore) {
         if (nextPieces.empty()) {
             bestScore = std::min(bestScore, Score(field));
@@ -63,11 +63,8 @@ namespace {
     }
 }
 
-
 PiecePosition Bot::GetBestPiecePosition(const Field& field, PieceType type, 
-                                        const std::deque<PieceType>& nextPieces) {
-    std::deque<PieceType> nextPiecesCopy = nextPieces;
-
+                                        std::deque<PieceType> nextPieces) {
     int bestScore = 10000.0;
     int currScore = 10000.0;
     PiecePosition bestPiecePosition;
@@ -76,7 +73,7 @@ PiecePosition Bot::GetBestPiecePosition(const Field& field, PieceType type,
     for (const auto& firstPiecePosition : GetAllPiecePositions(field, type)) {
         fieldCopy.PutAndClearFilledLines(firstPiecePosition);
 
-        GetBestScore(fieldCopy, nextPiecesCopy, currScore);
+        GetBestScore(fieldCopy, nextPieces, currScore);
         fieldCopy.EraseLastAddedPiece();
 
         if (currScore < bestScore) {

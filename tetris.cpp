@@ -24,7 +24,6 @@ namespace {
 
 }
 
-
 Tetris::Tetris()
     : TetrisField(Settings::FieldSize)
     , Drawer(Settings::FieldSize, Settings::PixelSize)
@@ -41,25 +40,20 @@ void Tetris::Play() {
 
     while (true) {
 
+        auto curPiece = NextPieces.front();
+        NextPieces.pop_front();
         NextPieces.push_back(GetRandomPiece());
 
         Drawer.UpdateNextPieces(NextPieces);
-        //DrawFrame();
 
-        auto curPiece = NextPieces.front();
-        NextPieces.pop_front();
-
-        //Drawer.UpdateNextPieces(NextPieces);
-
-        //TetrisField.PutAtStart(curPiece);
-        //DrawFrame();
-        DrawFrameWithoutWait();
+        TetrisField.PutAtStart(curPiece);
+        DrawFrame();
 
         auto startTime = GetCurrentTime();
         auto piecePosition = Bot::GetBestPiecePosition(TetrisField, curPiece, NextPieces);
         auto endTime = GetCurrentTime();
         
-        //TetrisField.EraseLastAddedPiece();
+        TetrisField.EraseLastAddedPiece();
         TetrisField.Put(piecePosition);
         
         Drawer.UpdateCalculationTime(endTime - startTime);

@@ -2,16 +2,15 @@
 #define BOT_H
 
 #include "piece.h"
-#include "point.h"
 #include "field.h"
 
 #include <deque>
-#include <vector>
 
-struct Bot {
-    static PiecePosition GetBestPiecePosition(const Field&, PieceType, const std::deque<PieceType>&);
+
+class Bot {
+public:
+    static PiecePosition GetBestPiecePosition(const Field&, PieceType, std::deque<PieceType>);
 };
-
 
 
 #endif // BOT_H

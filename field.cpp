@@ -10,19 +10,16 @@ Field::Field(const Point& size)
     , LineCount(0)
 {}
 
-
-Field::Field(const Field& _Field)
-    : Size(_Field.Size)
-    , Data(_Field.Data)
+Field::Field(const Field& field)
+    : Size(field.Size)
+    , Data(field.Data)
 {}
-
 
 Field& Field::operator=(const Field& _Field) {
     Size = _Field.Size;
     Data = _Field.Data;
     return *this;
 }
-
 
 bool Field::PutAtStart(PieceType type) {
     PieceAtStart = PiecePosition(
