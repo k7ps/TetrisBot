@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <omp.h>
+#include <limits.h>
 
 
 namespace {
@@ -65,18 +66,20 @@ namespace {
     }
 }
 
-PiecePosition Bot::GetBestPiecePosition(const Field& field, PieceType type, 
-                                        std::deque<PieceType> nextPieces) {
-    int bestScore = 10000.0;
-    int currScore = 10000.0;
-    PiecePosition bestPiecePosition;
+PiecePosition Bot::GetBestPiecePosition(
+    const Field& field, 
+    PieceType type, 
+    std::deque<PieceType> nextPieces
+) {
 
-    omp_set_num_threads(4);
+    int bestScore = INT_MAX;
+    PiecePosition bestPiecePosition;
 
     Field fieldCopy{field};
     for (const auto& firstPiecePosition : GetAllPiecePositions(field, type)) {
-        fieldCopy.PutAndClearFilledLines(firstPiecePosition);
+        int currScore = INT_MAX;
 
+        fieldCopy.PutAndClearFilledLines(firstPiecePosition);
         GetBestScore(fieldCopy, nextPieces, currScore);
         fieldCopy.EraseLastAddedPiece();
 
@@ -84,7 +87,6 @@ PiecePosition Bot::GetBestPiecePosition(const Field& field, PieceType type,
             bestScore = currScore;
             bestPiecePosition = firstPiecePosition;
         }
-        currScore = 10000.0;
     }
     return bestPiecePosition;
 }

@@ -40,9 +40,13 @@ void Tetris::Play() {
 
     while (true) {
 
+        NextPieces.push_back(GetRandomPiece());
+
+        Drawer.UpdateNextPieces(NextPieces);
+        DrawFrame();
+
         auto curPiece = NextPieces.front();
         NextPieces.pop_front();
-        NextPieces.push_back(GetRandomPiece());
 
         Drawer.UpdateNextPieces(NextPieces);
 

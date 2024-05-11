@@ -15,9 +15,9 @@ Field::Field(const Field& field)
     , Data(field.Data)
 {}
 
-Field& Field::operator=(const Field& _Field) {
-    Size = _Field.Size;
-    Data = _Field.Data;
+Field& Field::operator=(const Field& field) {
+    Size = field.Size;
+    Data = field.Data;
     return *this;
 }
 
