@@ -15,8 +15,8 @@ public:
     void Play();
 
 private:
-    void DrawFrame();
-    void DrawFrameWithoutWait();
+    void DrawScreen();
+    void DrawScreenWithoutWait();
 
 private:
     Field TetrisField;
@@ -25,3 +25,4 @@ private:
 };
 
 #endif // TETRIS_H 
+

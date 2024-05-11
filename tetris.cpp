@@ -36,45 +36,43 @@ Tetris::Tetris()
 }
 
 void Tetris::Play() {
-    DrawFrame();
+    DrawScreen();
 
     while (true) {
-
+        auto currPiece = NextPieces.front();
+        NextPieces.pop_front();
         NextPieces.push_back(GetRandomPiece());
 
+        if (!TetrisField.PutAtStart(currPiece)) {
+            Drawer.DrawGameOverScreen(TetrisField);
+            break;
+        }
         Drawer.UpdateNextPieces(NextPieces);
-        DrawFrame();
-
-        auto curPiece = NextPieces.front();
-        NextPieces.pop_front();
-
-        Drawer.UpdateNextPieces(NextPieces);
-
-        TetrisField.PutAtStart(curPiece);
-        DrawFrame();
+        DrawScreen();
 
         auto startTime = GetCurrentTime();
-        auto piecePosition = Bot::GetBestPiecePosition(TetrisField, curPiece, NextPieces);
+        auto piecePosition = Bot::GetBestPiecePosition(TetrisField, currPiece, NextPieces);
         auto endTime = GetCurrentTime();
         
         TetrisField.EraseLastAddedPiece();
         TetrisField.Put(piecePosition);
         
         Drawer.UpdateCalculationTime(endTime - startTime);
-        DrawFrame();
+        DrawScreen();
 
         if (TetrisField.ClearFilledLines()) {
             Drawer.UpdateLineCount(TetrisField.GetLineCount());
-            DrawFrame();
+            DrawScreen();
         }
     }
 }
 
-void Tetris::DrawFrameWithoutWait() {
-    Drawer.DrawFrame(TetrisField);
+void Tetris::DrawScreenWithoutWait() {
+    Drawer.DrawScreen(TetrisField);
 }
 
-void Tetris::DrawFrame() {
-    DrawFrameWithoutWait();
+void Tetris::DrawScreen() {
+    DrawScreenWithoutWait();
     std::this_thread::sleep_for(std::chrono::milliseconds(Settings::FrameTime));
 }
+

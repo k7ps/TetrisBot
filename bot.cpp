@@ -2,10 +2,10 @@
 #include "point.h"
 #include "settings.h"
 
-#include <vector>
-
 #include <omp.h>
+
 #include <limits.h>
+#include <vector>
 
 
 namespace {
@@ -65,38 +65,34 @@ namespace {
         }
         nextPieces.push_front(type);       
     }
+
 }
 
-PiecePosition Bot::GetBestPiecePosition(
-    const Field& field, 
-    PieceType type, 
-    const std::deque<PieceType>& nextPieces
-) {
 
+PiecePosition Bot::GetBestPiecePosition(
+    Field field, 
+    PieceType type, 
+    std::deque<PieceType> nextPieces
+) {
     int bestScore = INT_MAX;
     PiecePosition bestPiecePosition;
 
-    const auto& firstPiecePositions = GetAllPiecePositions(field, type);
+    #pragma omp parallel for firstprivate(field, nextPieces)
+        for (const auto& piecePosition : GetAllPiecePositions(field, type)) {
+            int currScore = INT_MAX;
 
-    Field fieldCopy{field};
-    std::deque<PieceType> nextPiecesCopy{nextPieces};
+            field.PutAndClearFilledLines(piecePosition);
+            GetBestScore(field, nextPieces, currScore);
+            field.EraseLastAddedPiece();
 
-    #pragma omp parallel for firstprivate (fieldCopy, nextPiecesCopy) num_threads(Settings::ThreadsCount)
-    for (int i = 0; i < firstPiecePositions.size(); i++) {
-        PiecePosition firstPiecePosition = firstPiecePositions[i];
-        int currScore = INT_MAX;
-
-        fieldCopy.PutAndClearFilledLines(firstPiecePosition);
-        GetBestScore(fieldCopy, nextPiecesCopy, currScore);
-        fieldCopy.EraseLastAddedPiece();
-
-        #pragma omp critical
-        {
-            if (currScore < bestScore) {
-                bestScore = currScore;
-                bestPiecePosition = firstPiecePosition;
+            #pragma omp critical
+            {
+                if (currScore < bestScore) {
+                    bestScore = currScore;
+                    bestPiecePosition = piecePosition;
+                }
             }
-        }
-    }  
+        }  
     return bestPiecePosition;
 }
+

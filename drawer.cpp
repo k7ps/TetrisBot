@@ -35,16 +35,24 @@ TerminalDrawer::TerminalDrawer(const Point& fieldSize, const Point& pixelSize)
     , CalculationCount(0)
     , LineCount(0)
 {
-    osm::OPTION(osm::CURSOR::OFF);
+    //osm::OPTION(osm::CURSOR::OFF);
 }
 
-void TerminalDrawer::DrawFrame(const Field& field) {
+void TerminalDrawer::DrawFrame(const Field& field, bool isGameOver) {
     ClearScreen();
     DrawNextPieces();
-    DrawField(field);
+    DrawField(field, isGameOver);
     DrawLineCount();
     DrawCalculationTime();
     osm::cout << '\n' << std::flush;
+}
+
+void TerminalDrawer::DrawScreen(const Field& field) {
+    DrawFrame(field, false);
+}
+
+void TerminalDrawer::DrawGameOverScreen(const Field& field) {
+    DrawFrame(field, true);
 }
 
 void TerminalDrawer::DrawNextPieces() {
@@ -68,7 +76,7 @@ void TerminalDrawer::DrawNextPieces() {
     canvas.refresh();
 }
 
-void TerminalDrawer::DrawField(const Field& field) {
+void TerminalDrawer::DrawField(const Field& field, bool isGameOver) {
     osm::Canvas canvas(FieldSize.x * PixelSize.x + 2, FieldSize.y * PixelSize.y + 2);
     canvas.enableFrame(true);
     canvas.setFrame(osm::FrameStyle::BOX);
@@ -78,6 +86,21 @@ void TerminalDrawer::DrawField(const Field& field) {
             DrawPixel(canvas, x, y, field[FieldSize.y - y - 1][x], canvas.isFrameEnabled());
         }
     }    
+
+    if (isGameOver) {
+        static const std::string label = "Game Over"; 
+        int labelSize = label.size();
+        Point start((canvas.getWidth() - labelSize) / 2 + 1, canvas.getHeight() / 2 + 1);
+        for (int y = start.y - PixelSize.y; y <= start.y + PixelSize.y; y++) {
+            for (int x = start.x - PixelSize.x; x < start.x + labelSize + PixelSize.x; x++) {
+                if (y == start.y && start.x <= x && x < start.x + labelSize) {
+                    canvas.put(x, y, label[x - start.x]);
+                } else {
+                    canvas.put(x, y, ' ');
+                }
+            }
+        }
+    }
     
     canvas.refresh();
 }

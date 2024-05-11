@@ -14,7 +14,8 @@ class TerminalDrawer {
 public:
     TerminalDrawer(const Point& fieldSize, const Point& pixelSize);
 
-    void DrawFrame(const Field&);
+    void DrawScreen(const Field&);
+    void DrawGameOverScreen(const Field&);
 
     void UpdateLineCount(int);
     void UpdateCalculationTime(int);
@@ -23,8 +24,9 @@ public:
     ~TerminalDrawer();
 
 private:
+    void DrawFrame(const Field&, bool isGameOver);
     void DrawNextPieces();
-    void DrawField(const Field&);
+    void DrawField(const Field&, bool isGameOver);
     void DrawLineCount();
     void DrawCalculationTime();
 
