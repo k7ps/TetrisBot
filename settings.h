@@ -12,11 +12,9 @@ namespace Settings {
     const Point FieldSize(10, 20);
     const Point PixelSize(2, 1);
 
-    const int KnownPiecesCount = 2;
+    const int KnownPiecesCount = 2; // should be >= 1
     
-    const int FrameTime = 100; // ms
-
-    const int ThreadsCount = 6;
+    const int FrameTime = 50; // ms
 
     const std::vector<std::string> PieceColors = {
         "black",
@@ -31,4 +29,6 @@ namespace Settings {
 
 }
 
+
 #endif // SETTINGS_H
+

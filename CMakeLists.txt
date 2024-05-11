@@ -18,3 +18,4 @@ add_executable(${ProjectName}
 )
 
 target_link_libraries(${ProjectName} PUBLIC osmanip::osmanip OpenMP::OpenMP_CXX)
+

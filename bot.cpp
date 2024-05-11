@@ -10,23 +10,14 @@
 
 namespace {
 
-    bool IsEpmtyRow(const Field& field, int y){
-        for (int x = 0; x < field.GetSize().x; x++){
-            if (field[y][x]) {
-                 return false;
-            }
-        }
-        return true;
-    }
-
-    int Score(const Field& field) {
+    int CountScore(const Field& field) {
         int score = 0;
-        for (int y = 0; y < field.GetSize().y && !IsEpmtyRow(field, y); y++) {
+        for (int y = 0; y < field.GetFirstEmptyRow(); y++) {
             for (int x = 0; x < field.GetSize().x; x++) {
-                if (field[y][x]) {
+                if (field[y][x] != 0) {
                     score += y + 1;
-                } else if (y + 1 < field.GetSize().y && field[y+1][x]) {
-                    score += y + 1;
+                } else if (y + 1 < field.GetSize().y && field[y + 1][x]) {
+                    score += (y + 2) * field.GetSize().x;
                 }
             }
         }
@@ -37,8 +28,10 @@ namespace {
         std::vector<PiecePosition> allPiecePositions;
 
         for (unsigned int rot = 0; rot < GetRotationCount(type); rot++) {
-            for (int x = 0; x < field.GetSize().x; x++) {
-                for (int y = 0; y < field.GetSize().y; y++) {
+            int n = field.GetSize().x - GetPieceWidth(type, rot) + 1;
+            int m = std::min(field.GetSize().y - GetPieceHeight(type, rot), field.GetFirstEmptyRow()) + 1;
+            for (int x = 0; x < n; x++) {
+                for (int y = m - 1; y >= 0; y--) {
                     PiecePosition currPiecePosition{Point(x, y), type, rot};
                     if (field.CanPut(currPiecePosition)) {
                         allPiecePositions.push_back(currPiecePosition);
@@ -52,14 +45,14 @@ namespace {
 
     void GetBestScore(Field& field, std::deque<PieceType>& nextPieces, int& bestScore) {
         if (nextPieces.empty()) {
-            bestScore = std::min(bestScore, Score(field));
+            bestScore = std::min(bestScore, CountScore(field));
             return;
         }
         PieceType type = nextPieces.front();
         nextPieces.pop_front();
 
-        for (const auto& currPiecePosition: GetAllPiecePositions(field, type)) {
-            field.PutAndClearFilledLines(currPiecePosition);
+        for (const auto& piecePosition : GetAllPiecePositions(field, type)) {
+            field.PutAndClearFilledLines(piecePosition);
             GetBestScore(field, nextPieces, bestScore);
             field.EraseLastAddedPiece();
         }

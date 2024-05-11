@@ -30,6 +30,10 @@ Tetris::Tetris()
 {
     srandom(time(0));
 
+    if (Settings::KnownPiecesCount < 1) {
+        throw std::invalid_argument("Settings::KnownPiecesCount should be >= 1");
+    }
+
     for (int i = 0; i < Settings::KnownPiecesCount; i++) {
         NextPieces.push_back(GetRandomPiece());
     }
@@ -50,11 +54,12 @@ void Tetris::Play() {
         Drawer.UpdateNextPieces(NextPieces);
         DrawScreen();
 
+        TetrisField.EraseLastAddedPiece();
+
         auto startTime = GetCurrentTime();
         auto piecePosition = Bot::GetBestPiecePosition(TetrisField, currPiece, NextPieces);
         auto endTime = GetCurrentTime();
         
-        TetrisField.EraseLastAddedPiece();
         TetrisField.Put(piecePosition);
         
         Drawer.UpdateCalculationTime(endTime - startTime);
