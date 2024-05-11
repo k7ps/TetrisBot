@@ -50,11 +50,12 @@ void Tetris::Play() {
         Drawer.UpdateNextPieces(NextPieces);
         DrawScreen();
 
+        TetrisField.EraseLastAddedPiece();
+
         auto startTime = GetCurrentTime();
         auto piecePosition = Bot::GetBestPiecePosition(TetrisField, currPiece, NextPieces);
         auto endTime = GetCurrentTime();
         
-        TetrisField.EraseLastAddedPiece();
         TetrisField.Put(piecePosition);
         
         Drawer.UpdateCalculationTime(endTime - startTime);
@@ -73,6 +74,6 @@ void Tetris::DrawScreenWithoutWait() {
 
 void Tetris::DrawScreen() {
     DrawScreenWithoutWait();
-    std::this_thread::sleep_for(std::chrono::milliseconds(Settings::FrameTime));
+    //std::this_thread::sleep_for(std::chrono::milliseconds(Settings::FrameTime));
 }
 

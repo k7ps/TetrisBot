@@ -16,8 +16,6 @@ namespace Settings {
     
     const int FrameTime = 100; // ms
 
-    const int ThreadsCount = 6;
-
     const std::vector<std::string> PieceColors = {
         "black",
         "bg red",
@@ -31,4 +29,6 @@ namespace Settings {
 
 }
 
+
 #endif // SETTINGS_H
+

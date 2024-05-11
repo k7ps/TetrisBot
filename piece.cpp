@@ -9,7 +9,7 @@ namespace {
 
     void ThrowIfNotInRange(int i, int l, int r, const std::string& msg) {
         if (i < l || i > r) {
-            throw std::invalid_argument(msg);
+            throw std::invalid_argument(msg + ": " + std::to_string(i));
         }
     }
 
