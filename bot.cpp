@@ -10,11 +10,11 @@
 
 namespace {
 
-    int Score(const Field& field) {
+    int CountScore(const Field& field) {
         int score = 0;
         for (int y = 0; y < field.GetFirstEmptyRow(); y++) {
             for (int x = 0; x < field.GetSize().x; x++) {
-                if (field[y][x]) {
+                if (field[y][x] != 0) {
                     score += y + 1;
                 } else if (y + 1 < field.GetSize().y && field[y + 1][x]) {
                     score += (y + 2) * field.GetSize().x;
@@ -45,7 +45,7 @@ namespace {
 
     void GetBestScore(Field& field, std::deque<PieceType>& nextPieces, int& bestScore) {
         if (nextPieces.empty()) {
-            bestScore = std::min(bestScore, Score(field));
+            bestScore = std::min(bestScore, CountScore(field));
             return;
         }
         PieceType type = nextPieces.front();
@@ -63,7 +63,7 @@ namespace {
 
 
 PiecePosition Bot::GetBestPiecePosition(
-    Field& field, 
+    Field field, 
     PieceType type, 
     std::deque<PieceType> nextPieces
 ) {
