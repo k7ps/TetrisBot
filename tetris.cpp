@@ -74,6 +74,6 @@ void Tetris::DrawScreenWithoutWait() {
 
 void Tetris::DrawScreen() {
     DrawScreenWithoutWait();
-    //std::this_thread::sleep_for(std::chrono::milliseconds(Settings::FrameTime));
+    std::this_thread::sleep_for(std::chrono::milliseconds(Settings::FrameTime));
 }
 

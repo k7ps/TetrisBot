@@ -16,8 +16,8 @@ namespace {
             for (int x = 0; x < field.GetSize().x; x++) {
                 if (field[y][x]) {
                     score += y + 1;
-                } else if (y + 1 < field.GetSize().y && field[y+1][x]) {
-                    score += (y + 2) * 10;
+                } else if (y + 1 < field.GetSize().y && field[y + 1][x]) {
+                    score += (y + 2) * field.GetSize().x;
                 }
             }
         }
@@ -51,8 +51,8 @@ namespace {
         PieceType type = nextPieces.front();
         nextPieces.pop_front();
 
-        for (const auto& currPiecePosition: GetAllPiecePositions(field, type)) {
-            field.PutAndClearFilledLines(currPiecePosition);
+        for (const auto& piecePosition : GetAllPiecePositions(field, type)) {
+            field.PutAndClearFilledLines(piecePosition);
             GetBestScore(field, nextPieces, bestScore);
             field.EraseLastAddedPiece();
         }
