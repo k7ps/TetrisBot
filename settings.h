@@ -12,9 +12,11 @@ namespace Settings {
     const Point FieldSize(10, 20);
     const Point PixelSize(2, 1);
 
-    const int KnownPiecesCount = 3;
+    const int KnownPiecesCount = 0;
     
     const int FrameTime = 500; // ms
+
+    const int ThreadsCount = 6;
 
     const std::vector<std::string> PieceColors = {
         "black",

@@ -4,6 +4,7 @@ build
 # vim work files
 *~
 *.swp
+.vscode/
 
 # some instruments
 util
