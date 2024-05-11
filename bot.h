@@ -9,8 +9,9 @@
 
 class Bot {
 public:
-    static PiecePosition GetBestPiecePosition(const Field&, PieceType, const std::deque<PieceType>&);
+    static PiecePosition GetBestPiecePosition(Field, PieceType, std::deque<PieceType>);
 };
 
 
 #endif // BOT_H
+
