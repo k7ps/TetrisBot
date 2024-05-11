@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include <omp.h>
+
 
 namespace {
 
@@ -68,6 +70,8 @@ PiecePosition Bot::GetBestPiecePosition(const Field& field, PieceType type,
     int bestScore = 10000.0;
     int currScore = 10000.0;
     PiecePosition bestPiecePosition;
+
+    omp_set_num_threads(4);
 
     Field fieldCopy{field};
     for (const auto& firstPiecePosition : GetAllPiecePositions(field, type)) {
