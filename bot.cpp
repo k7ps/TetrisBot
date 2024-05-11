@@ -1,5 +1,6 @@
 #include "bot.h"
 #include "point.h"
+#include "settings.h"
 
 #include <vector>
 
@@ -69,24 +70,33 @@ namespace {
 PiecePosition Bot::GetBestPiecePosition(
     const Field& field, 
     PieceType type, 
-    std::deque<PieceType> nextPieces
+    const std::deque<PieceType>& nextPieces
 ) {
 
     int bestScore = INT_MAX;
     PiecePosition bestPiecePosition;
 
+    const auto& firstPiecePositions = GetAllPiecePositions(field, type);
+
     Field fieldCopy{field};
-    for (const auto& firstPiecePosition : GetAllPiecePositions(field, type)) {
+    std::deque<PieceType> nextPiecesCopy{nextPieces};
+
+    #pragma omp parallel for firstprivate (fieldCopy, nextPiecesCopy) num_threads(Settings::ThreadsCount)
+    for (int i = 0; i < firstPiecePositions.size(); i++) {
+        PiecePosition firstPiecePosition = firstPiecePositions[i];
         int currScore = INT_MAX;
 
         fieldCopy.PutAndClearFilledLines(firstPiecePosition);
-        GetBestScore(fieldCopy, nextPieces, currScore);
+        GetBestScore(fieldCopy, nextPiecesCopy, currScore);
         fieldCopy.EraseLastAddedPiece();
 
-        if (currScore < bestScore) {
-            bestScore = currScore;
-            bestPiecePosition = firstPiecePosition;
+        #pragma omp critical
+        {
+            if (currScore < bestScore) {
+                bestScore = currScore;
+                bestPiecePosition = firstPiecePosition;
+            }
         }
-    }
+    }  
     return bestPiecePosition;
 }
